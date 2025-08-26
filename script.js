@@ -3,8 +3,156 @@
     emailjs.init('WxsFcH0Ah_J79S9tO'); // Replace with your actual EmailJS user ID
 })();
 
-// Vercel Analytics helper function
+// Cookie Consent Management
+const cookieConsent = {
+    translations: {
+        en: {
+            title: "Privacy & Analytics",
+            message: "This site uses analytics to improve performance and user experience. We collect anonymous usage data to help optimize our stress cost calculator. No personal data is shared with third parties.",
+            accept: "Accept & Continue",
+            decline: "Decline",
+            language: "Language:"
+        },
+        da: {
+            title: "Privatliv & Analyse",
+            message: "Denne side bruger analyse for at forbedre ydeevne og brugeroplevelse. Vi indsamler anonyme brugsdata for at hjælpe med at optimere vores stress-omkostningsberegner. Ingen personlige data deles med tredjeparter.",
+            accept: "Accepter & Fortsæt",
+            decline: "Afvis",
+            language: "Sprog:"
+        },
+        de: {
+            title: "Datenschutz & Analyse",
+            message: "Diese Website verwendet Analysen zur Verbesserung der Leistung und Benutzererfahrung. Wir sammeln anonyme Nutzungsdaten, um unseren Stress-Kostenrechner zu optimieren. Keine persönlichen Daten werden an Dritte weitergegeben.",
+            accept: "Akzeptieren & Fortfahren",
+            decline: "Ablehnen",
+            language: "Sprache:"
+        },
+        fr: {
+            title: "Confidentialité & Analyse",
+            message: "Ce site utilise des analyses pour améliorer les performances et l'expérience utilisateur. Nous collectons des données d'utilisation anonymes pour optimiser notre calculateur de coûts de stress. Aucune donnée personnelle n'est partagée avec des tiers.",
+            accept: "Accepter & Continuer",
+            decline: "Refuser",
+            language: "Langue:"
+        },
+        es: {
+            title: "Privacidad & Análisis",
+            message: "Este sitio utiliza análisis para mejorar el rendimiento y la experiencia del usuario. Recopilamos datos de uso anónimos para optimizar nuestra calculadora de costos de estrés. No se comparten datos personales con terceros.",
+            accept: "Aceptar & Continuar",
+            decline: "Rechazar",
+            language: "Idioma:"
+        }
+    },
+
+    init() {
+        const consentGiven = localStorage.getItem('cookieConsent');
+        const consentDeclined = localStorage.getItem('cookieDeclined');
+        
+        if (!consentGiven && !consentDeclined) {
+            this.showPopup();
+        } else if (consentDeclined === 'true') {
+            this.disableTracking();
+        }
+        
+        this.bindEvents();
+    },
+
+    showPopup() {
+        const popup = document.getElementById('cookieConsent');
+        if (popup) {
+            popup.classList.remove('hidden');
+            // Set default language based on current locale
+            const currentLang = currentLocale?.split('-')[0] || 'en';
+            const langSelect = document.getElementById('cookieLanguage');
+            if (langSelect && this.translations[currentLang]) {
+                langSelect.value = currentLang;
+                this.updateLanguage(currentLang);
+            }
+        }
+    },
+
+    hidePopup() {
+        const popup = document.getElementById('cookieConsent');
+        if (popup) {
+            popup.classList.add('hidden');
+        }
+    },
+
+    updateLanguage(lang) {
+        const translations = this.translations[lang] || this.translations.en;
+        
+        document.getElementById('cookieTitle').textContent = translations.title;
+        document.getElementById('cookieMessage').textContent = translations.message;
+        document.getElementById('acceptText').textContent = translations.accept;
+        document.getElementById('declineText').textContent = translations.decline;
+        document.getElementById('languageLabel').textContent = translations.language;
+    },
+
+    acceptCookies() {
+        localStorage.setItem('cookieConsent', 'true');
+        localStorage.removeItem('cookieDeclined');
+        this.hidePopup();
+        
+        // Track consent acceptance
+        trackEvent('cookie_consent_accepted', {
+            timestamp: new Date().toISOString()
+        });
+    },
+
+    declineCookies() {
+        localStorage.setItem('cookieDeclined', 'true');
+        localStorage.removeItem('cookieConsent');
+        this.hidePopup();
+        this.disableTracking();
+    },
+
+    disableTracking() {
+        // Override tracking functions to do nothing
+        window.trackEvent = () => {};
+        window.trackPerformance = () => {};
+        
+        // You could also disable Vercel scripts here if needed
+        console.log('Analytics tracking disabled by user choice');
+    },
+
+    bindEvents() {
+        const acceptBtn = document.getElementById('acceptCookies');
+        const declineBtn = document.getElementById('declineCookies');
+        const languageSelect = document.getElementById('cookieLanguage');
+
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', () => this.acceptCookies());
+        }
+
+        if (declineBtn) {
+            declineBtn.addEventListener('click', () => this.declineCookies());
+        }
+
+        if (languageSelect) {
+            languageSelect.addEventListener('change', (e) => {
+                this.updateLanguage(e.target.value);
+            });
+        }
+
+        // Close on backdrop click
+        const popup = document.getElementById('cookieConsent');
+        if (popup) {
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) {
+                    // Don't close on backdrop click for cookie consent
+                    // this.declineCookies();
+                }
+            });
+        }
+    }
+};
+
+// Vercel Analytics helper function (enhanced with consent check)
 function trackEvent(eventName, properties = {}) {
+    // Check if user has declined cookies
+    if (localStorage.getItem('cookieDeclined') === 'true') {
+        return;
+    }
+    
     if (typeof window !== 'undefined' && window.va) {
         window.va('track', eventName, properties);
     } else if (typeof window !== 'undefined' && window.gtag) {
@@ -13,8 +161,13 @@ function trackEvent(eventName, properties = {}) {
     }
 }
 
-// Performance tracking helper
+// Performance tracking helper (enhanced with consent check)
 function trackPerformance(metricName, value, properties = {}) {
+    // Check if user has declined cookies
+    if (localStorage.getItem('cookieDeclined') === 'true') {
+        return;
+    }
+    
     if (typeof window !== 'undefined' && window.va) {
         window.va('track', `performance_${metricName}`, {
             value: value,
@@ -729,6 +882,9 @@ if (globalCurrencySelect) {
 
 // Page load performance tracking
 window.addEventListener('load', () => {
+    // Initialize cookie consent popup
+    cookieConsent.init();
+    
     // Track page load time
     const loadTime = performance.now();
     trackPerformance('page_load', loadTime);

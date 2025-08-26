@@ -578,6 +578,40 @@
         </div>
     </div>
 
+    <!-- Cookie Consent Popup -->
+    <div id="cookieConsent" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md mx-4 overflow-hidden">
+            <div class="bg-gradient-to-r from-primary-500 to-primary-700 p-4">
+                <h3 class="text-white font-semibold text-lg" id="cookieTitle">Privacy & Analytics</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-gray-700 mb-4 leading-relaxed" id="cookieMessage">
+                    This site uses analytics to improve performance and user experience. We collect anonymous usage data to help optimize our stress cost calculator. No personal data is shared with third parties.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button id="acceptCookies" class="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-2 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 font-medium">
+                        <span id="acceptText">Accept & Continue</span>
+                    </button>
+                    <button id="declineCookies" class="flex-1 bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium">
+                        <span id="declineText">Decline</span>
+                    </button>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <label class="text-sm text-gray-600 flex items-center">
+                        <span id="languageLabel">Language:</span>
+                        <select id="cookieLanguage" class="ml-2 text-sm border border-gray-200 rounded-md px-2 py-1 text-gray-700 hover:bg-gray-50">
+                            <option value="en">English</option>
+                            <option value="da">Dansk</option>
+                            <option value="de">Deutsch</option>
+                            <option value="fr">Français</option>
+                            <option value="es">Español</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Add EmailJS script - defer for FCP optimization -->
     <script defer type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
