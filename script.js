@@ -877,20 +877,44 @@ function calculateCosts() {
 }
 
 // Send anonymous data til Google Sheets
+let lastDataSent = 0;
+let hasBeenSent = false;
+let lastEmployeeCount = 0;
+let lastBranche = '';
+
 async function sendDataToGoogleSheets(data) {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycby_wSC8rT4F4miVmOqNgUL-Xevz0Auzh0GztqnenUWwh0eBgNXFGbytMeGAFvyFdDN6/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
-        console.log('Data sent to Google Sheets successfully');
-    } catch (error) {
-        console.log('Error sending data to Google Sheets:', error);
-        // Fail silently - don't disturb user experience
+    // Only send data if meaningful changes or first time
+    const now = Date.now();
+    const timeSinceLastSent = now - lastDataSent;
+    const isFirstCalculation = !hasBeenSent;
+    const hasSignificantChange = (data.employees !== lastEmployeeCount) || (data.branche !== lastBranche);
+    
+    // Send data only if:
+    // 1. First calculation on page, OR
+    // 2. Significant change in core data, OR  
+    // 3. At least 2 minutes since last send
+    if (isFirstCalculation || hasSignificantChange || timeSinceLastSent > 120000) {
+        try {
+            const response = await fetch('https://script.google.com/macros/s/AKfycby_wSC8rT4F4miVmOqNgUL-Xevz0Auzh0GztqnenUWwh0eBgNXFGbytMeGAFvyFdDN6/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            // Update tracking variables
+            lastDataSent = now;
+            hasBeenSent = true;
+            lastEmployeeCount = data.employees;
+            lastBranche = data.branche;
+            
+            console.log('Data sent to Google Sheets successfully');
+        } catch (error) {
+            console.log('Error sending data to Google Sheets:', error);
+            // Fail silently - don't disturb user experience
+        }
     }
 }
 
