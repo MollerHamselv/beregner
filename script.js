@@ -7,6 +7,9 @@
 function trackEvent(eventName, properties = {}) {
     if (typeof window !== 'undefined' && window.va) {
         window.va('track', eventName, properties);
+    } else if (typeof window !== 'undefined' && window.gtag) {
+        // Fallback to gtag if va is not available
+        window.gtag('event', eventName, properties);
     }
 }
 
