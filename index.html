@@ -285,7 +285,7 @@
                     </div>
                     
                     <div class="bg-gray-50 p-6 rounded-lg">
-                        <div class="flex justify-between items-center mb-4">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                             <h2 class="text-xl font-semibold text-gray-800">Visualisering</h2>
                             <div class="flex space-x-2">
                                 <div id="chartTab" class="tab active px-3 py-1">Graf</div>
@@ -306,30 +306,39 @@
                                 </div>
                                 
                                 <!-- Grid lines - aligned with y-axis labels -->
-                                <div class="chart-grid-line" style="top: 20px;"></div>
-                                <div class="chart-grid-line" style="top: 90px;"></div>
-                                <div class="chart-grid-line" style="top: 160px;"></div>
-                                <div class="chart-grid-line" style="top: 230px;"></div>
-                                <div class="chart-grid-line" style="top: 300px;"></div>
+                                <div class="chart-grid-line"></div>
+                                <div class="chart-grid-line"></div>
+                                <div class="chart-grid-line"></div>
+                                <div class="chart-grid-line"></div>
+                                <div class="chart-grid-line"></div>
                                 
                                 <!-- Chart bars container -->
                                 <div class="chart-container">
                                     <div class="chart-bar-container">
                                         <div id="absentBar" class="chart-bar bg-primary-500" style="height: 0%;"></div>
                                         <div id="absentBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
-                                        <div class="chart-bar-label">Sygefravær</div>
+                                        <div class="chart-bar-label">
+                                            <span class="sm:hidden">Syge</span>
+                                            <span class="hidden sm:inline">Sygefravær</span>
+                                        </div>
                                     </div>
                                     
                                     <div class="chart-bar-container">
                                         <div id="productivityBar" class="chart-bar bg-primary-400" style="height: 0%;"></div>
                                         <div id="productivityBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
-                                        <div class="chart-bar-label">Produktivitet</div>
+                                        <div class="chart-bar-label">
+                                            <span class="sm:hidden">Prod.</span>
+                                            <span class="hidden sm:inline">Produktivitet</span>
+                                        </div>
                                     </div>
                                     
                                     <div class="chart-bar-container">
                                         <div id="turnoverBar" class="chart-bar bg-primary-600" style="height: 0%;"></div>
                                         <div id="turnoverBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
-                                        <div class="chart-bar-label">Udskiftning</div>
+                                        <div class="chart-bar-label">
+                                            <span class="sm:hidden">Udskift.</span>
+                                            <span class="hidden sm:inline">Udskiftning</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -381,13 +390,29 @@
             <!-- Forbedret scenarie og ROI -->
             <div class="mt-8 bg-gray-50 p-6 rounded-lg">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Forbedret scenarie og ROI</h2>
+                
+                <!-- Forklaringsboks -->
+                <div class="bg-primary-50 p-4 rounded-lg mb-6 border-l-4 border-primary-500">
+                    <h3 class="text-md font-semibold text-primary-800 mb-2">Hvordan virker forbedringscalculatoren?</h3>
+                    <p class="text-gray-700 text-sm mb-3">
+                        Denne sektion hjælper dig med at vurdere værdien af at investere i stressforebyggelse og trivselsinitiativer.
+                    </p>
+                    <div class="text-gray-700 text-sm space-y-1">
+                        <p><strong>Forbedringsprocent:</strong> Hvor meget du forventer at reducere stress-relaterede problemer (f.eks. 20% = færre sygedage, højere produktivitet)</p>
+                        <p><strong>Programomkostning:</strong> Årlige udgifter til stressforebyggelse (f.eks. coaching, kurser, arbejdsmiljøforbedringer)</p>
+                        <p><strong>ROI:</strong> Return on Investment - hvor mange kroner du sparer pr. krone investeret</p>
+                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <div>
                             <div class="flex items-center mb-2">
                                 <label class="block text-gray-700" for="improvementPercent">Forventet forbedring (%)</label>
-                                <div class="tooltip ml-2"><span class="info-icon">i</span><span class="tooltip-text">Samlet procentvis reduktion anvendt på omkostningerne.</span></div>
+                                <div class="tooltip ml-2">
+                                    <span class="info-icon">i</span>
+                                    <span class="tooltip-text">Hvor stor en procentvis reduktion du forventer i stress-relaterede omkostninger gennem forbedringsinitiativer. Realistiske værdier: 10-30% ved målrettede indsatser, 30-50% ved omfattende programmer. Baseret på studier viser stressforebyggelse typisk 15-25% reduktion i sygefravær og forbedret produktivitet.</span>
+                                </div>
                             </div>
                             <div class="flex items-center">
                                 <input type="range" id="improvementPercent" min="0" max="100" value="20" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer">
@@ -401,7 +426,10 @@
                         <div>
                             <div class="flex items-center mb-2">
                                 <label class="block text-gray-700" for="programCost">Programomkostning (årligt)</label>
-                                <div class="tooltip ml-2"><span class="info-icon">i</span><span class="tooltip-text">Årlig udgift til forbedringsprogrammet.</span></div>
+                                <div class="tooltip ml-2">
+                                    <span class="info-icon">i</span>
+                                    <span class="tooltip-text">De årlige omkostninger til dit stressforebyggelsesprogram. Inkluderer f.eks. coaching, kurser, arbejdsmiljøkonsulenter, trivselsinitiativer, etc. Typiske værdier: 2.000-8.000 kr. pr. medarbejder årligt afhængigt af programmets omfang.</span>
+                                </div>
                             </div>
                             <input type="number" id="programCost" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
                         </div>
@@ -427,6 +455,17 @@
                                 <div id="roiValue" class="text-xl font-bold text-gray-800">0%</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Vigtige antagelser og begrænsninger -->
+                <div class="mt-6 bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                    <h3 class="text-md font-semibold text-orange-800 mb-2">Vigtige antagelser og begrænsninger</h3>
+                    <div class="text-gray-700 text-sm space-y-2">
+                        <p><strong>Simpel model:</strong> Denne beregning antager en ensartet forbedring på tværs af alle omkostningstyper. I virkeligheden kan effekten variere - nogle initiativer reducerer primært sygefravær, andre forbedrer produktivitet.</p>
+                        <p><strong>Tidshorisont:</strong> Forbedringer sker sjældent med det samme. Realistisk tidsramme for at se fuld effekt er 6-14 måneder.</p>
+                        <p><strong>ROI-tolkning:</strong> En ROI på 200% betyder at du får 3 kr. tilbage for hver krone investeret (2 kr. gevinst + 1 kr. investering).</p>
+                        <p><strong>Brug som udgangspunkt:</strong> Brug disse tal som et estimat til at diskutere business case for stressforebyggelse, ikke som præcise forudsigelser.</p>
                     </div>
                 </div>
             </div>

@@ -192,9 +192,6 @@ const absentCostElement = document.getElementById('absentCost');
 const productivityCostElement = document.getElementById('productivityCost');
 const turnoverCostElement = document.getElementById('turnoverCost');
 const totalCostElement = document.getElementById('totalCost');
-const stressedEmployeesElement = document.getElementById('stressedEmployees');
-const totalEmployeesElement = document.getElementById('totalEmployees');
-const costPerEmployeeElement = document.getElementById('costPerEmployee');
 
 // Graf elementer
 const absentBar = document.getElementById('absentBar');
@@ -292,14 +289,21 @@ window.addEventListener('click', (event) => {
 
 // Opdater modal værdier med aktuelle beregninger
 function updateModalValues() {
+    // Beregn værdier fra input-felterne
+    const employees = parseInt(employeesInput.value) || 0;
+    const stressPercent = parseInt(stressPercentInput.value) || 0;
+    const stressedEmployees = Math.round(employees * (stressPercent / 100));
+    const totalCostValue = parseInt(totalCostElement.textContent.replace(/[^\d]/g, '')) || 0;
+    const costPerEmployee = stressedEmployees > 0 ? totalCostValue / stressedEmployees : 0;
+    
     modalTotalCost.textContent = totalCostElement.textContent;
-    modalStressedEmployees.textContent = stressedEmployeesElement.textContent;
-    modalCostPerEmployee.textContent = costPerEmployeeElement.textContent;
+    modalStressedEmployees.textContent = stressedEmployees.toString();
+    modalCostPerEmployee.textContent = formatCurrency(costPerEmployee);
     
     // Opdater skjulte formularfelter
     formTotalCost.value = totalCostElement.textContent;
-    formStressedEmployees.value = stressedEmployeesElement.textContent;
-    formCostPerEmployee.value = costPerEmployeeElement.textContent;
+    formStressedEmployees.value = stressedEmployees.toString();
+    formCostPerEmployee.value = formatCurrency(costPerEmployee);
     formAbsentCost.value = absentCostElement.textContent;
     formProductivityCost.value = productivityCostElement.textContent;
     formTurnoverCost.value = turnoverCostElement.textContent;
@@ -331,6 +335,13 @@ function clamp(value, min, max) {
 
 // -------- Export: CSV & PDF --------
 function getCurrentExportData() {
+    // Beregn værdier fra input-felterne
+    const employees = parseInt(employeesInput.value) || 0;
+    const stressPercent = parseInt(stressPercentInput.value) || 0;
+    const stressedEmployees = Math.round(employees * (stressPercent / 100));
+    const totalCostValue = parseInt(totalCostElement.textContent.replace(/[^\d]/g, '')) || 0;
+    const costPerEmployee = stressedEmployees > 0 ? totalCostValue / stressedEmployees : 0;
+    
     return {
         employees: employeesInput.value,
         avgSalary: avgSalaryInput.value,
@@ -343,8 +354,8 @@ function getCurrentExportData() {
         productivityCost: productivityCostElement.textContent,
         turnoverCost: turnoverCostElement.textContent,
         totalCost: totalCostElement.textContent,
-        stressedEmployees: stressedEmployeesElement.textContent,
-        costPerEmployee: costPerEmployeeElement.textContent,
+        stressedEmployees: stressedEmployees.toString(),
+        costPerEmployee: formatCurrency(costPerEmployee),
         improvedTotal: improvedTotalCostEl ? improvedTotalCostEl.textContent : '',
         savingsAmount: savingsAmountEl ? savingsAmountEl.textContent : '',
         roiValue: roiValueEl ? roiValueEl.textContent : ''
@@ -764,12 +775,6 @@ function calculateCosts() {
     
     totalCostElement.textContent = formatCurrency(totalCost);
     totalCostElement.className = "text-2xl font-bold text-red-600";
-    
-    stressedEmployeesElement.textContent = stressedEmployees;
-    totalEmployeesElement.textContent = employees;
-    
-    costPerEmployeeElement.textContent = formatCurrency(costPerEmployee);
-    costPerEmployeeElement.className = "font-semibold text-gray-800";
 
     // Forbedret scenarie beregning
     const improvementPercent = improvementPercentInput ? (parseInt(improvementPercentInput.value) || 0) : 0;
