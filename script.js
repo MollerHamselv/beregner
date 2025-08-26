@@ -3,6 +3,13 @@
     emailjs.init('WxsFcH0Ah_J79S9tO'); // Replace with your actual EmailJS user ID
 })();
 
+// Vercel Analytics helper function
+function trackEvent(eventName, properties = {}) {
+    if (typeof window !== 'undefined' && window.va) {
+        window.va('track', eventName, properties);
+    }
+}
+
 // Elementer
 const employeesInput = document.getElementById('employees');
 const avgSalaryInput = document.getElementById('avgSalary');
@@ -92,6 +99,12 @@ let currentCurrency = 'DKK';
 
 // Modal funktionalitet
 ctaButton.addEventListener('click', () => {
+    // Track modal open event
+    trackEvent('contact_modal_opened', {
+        currency: currentCurrency,
+        has_calculations: !!document.getElementById('totalCost')?.textContent
+    });
+    
     ctaModal.style.display = 'block';
     document.body.style.overflow = 'hidden'; // Forhindrer scrolling af baggrunden
     
@@ -525,6 +538,13 @@ function loadState() {
 }
 
 function calculateCosts() {
+    // Track calculation event
+    trackEvent('calculation_performed', {
+        employees: parseInt(employeesInput.value) || 0,
+        currency: currentCurrency,
+        hasStressData: (parseInt(stressPercentInput.value) || 0) > 0
+    });
+    
     // Tilføj animation til beregningsknappen
     calculateBtn.classList.add('animate-pulse');
     setTimeout(() => {
@@ -668,6 +688,14 @@ if (globalCurrencySelect) {
         const parts = val.split(',');
         currentLocale = parts[0] || 'da-DK';
         currentCurrency = parts[1] || 'DKK';
+        
+        // Track currency change
+        trackEvent('currency_changed', {
+            from_currency: currentCurrency,
+            to_currency: parts[1] || 'DKK',
+            locale: parts[0] || 'da-DK'
+        });
+        
         calculateCosts();
         saveState();
     });
