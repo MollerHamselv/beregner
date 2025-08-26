@@ -89,16 +89,16 @@ input[type="range"]:focus::-moz-range-thumb {
     border-radius: 8px;
     padding: 20px;
     margin: 20px 0;
-    overflow: visible; /* Changed from hidden to visible */
+    overflow: hidden; /* Ændret tilbage til hidden for at skjule overflødige grid-linjer */
 }
 
 .chart-container {
     position: relative;
-    width: calc(100% - 80px);
+    width: calc(100% - 85px); /* Justeret for ny y-akse bredde */
     height: 280px;
-    margin-left: 80px;
+    margin-left: 85px; /* Justeret for ny y-akse bredde */
     display: flex;
-    align-items: flex-end; /* This ensures bars grow upward from bottom */
+    align-items: flex-end;
     justify-content: space-evenly;
     border-bottom: 2px solid #d1d5db;
     border-left: 2px solid #d1d5db;
@@ -110,40 +110,44 @@ input[type="range"]:focus::-moz-range-thumb {
     left: 0;
     top: 20px;
     height: 280px;
-    width: 70px;
-    z-index: 20; /* Increased z-index */
+    width: 75px; /* Øget bredde for bedre plads */
+    z-index: 20;
 }
 
 .chart-y-axis-label {
     position: absolute;
-    right: 5px; /* Moved closer to chart */
-    font-size: 12px; /* Increased font size */
-    color: #374151; /* Darker color for better visibility */
+    right: 8px; /* Bedre afstand til chart */
+    font-size: 13px; /* Øget skriftstørrelse for bedre læsbarhed */
+    color: #1f2937; /* Mørkere farve for bedre kontrast */
     background: white;
-    padding: 3px 8px; /* Increased padding */
-    border-radius: 4px;
-    border: 1px solid #d1d5db; /* Stronger border */
+    padding: 4px 10px; /* Øget padding for bedre udseende */
+    border-radius: 6px; /* Afrundede hjørner */
+    border: 1px solid #d1d5db;
     transform: translateY(-50%);
     white-space: nowrap;
-    font-weight: 600; /* Bolder text */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Added shadow */
+    font-weight: 700; /* Mere fed tekst */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Bedre skygge */
+    text-align: right;
+    min-width: 60px; /* Sikrer konsistent bredde */
 }
 
 .chart-grid-line {
     position: absolute;
-    left: 80px;
+    left: 82px; /* Justeret for ny y-akse bredde */
     right: 20px;
     height: 1px;
     background: #e5e7eb;
     z-index: 5;
+    /* Sikrer at grid-linjerne kun vises inden for chart området */
+    clip-path: inset(0 0 0 0);
 }
 
-/* Grid lines positioned with percentages for responsive design */
+/* Grid lines positioned with percentages - justeret så de ikke går uden for chart */
 .chart-grid-line:nth-child(1) { top: 7%; }
 .chart-grid-line:nth-child(2) { top: 32%; }
 .chart-grid-line:nth-child(3) { top: 57%; }
 .chart-grid-line:nth-child(4) { top: 82%; }
-.chart-grid-line:nth-child(5) { top: 107%; }
+.chart-grid-line:nth-child(5) { top: 99%; } /* Ændret fra 107% til 99% */
 
 .chart-bar-container {
     display: flex;
@@ -186,14 +190,21 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 .chart-bar-label {
-    margin-bottom: 4px; /* Changed from margin-top to margin-bottom */
-    font-size: 12px;
+    position: absolute;
+    bottom: -30px; /* Flyttet labels helt under grafen */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px; /* Øget skriftstørrelse */
     font-weight: 600;
-    color: #374151;
+    color: #1f2937; /* Mørkere farve */
     text-align: center;
-    width: 100%;
-    line-height: 1.2;
-    order: 3; /* Place label at bottom */
+    width: 100px; /* Øget bredde for bedre plads */
+    line-height: 1.3;
+    background: white; /* Hvid baggrund for bedre læsbarhed */
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .chart-bar-value {

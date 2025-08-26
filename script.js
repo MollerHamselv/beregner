@@ -187,6 +187,7 @@ const absentDaysValue = document.getElementById('absentDaysValue');
 const productivityLossInput = document.getElementById('productivityLoss');
 const productivityLossValue = document.getElementById('productivityLossValue');
 const calculateBtn = document.getElementById('calculateBtn');
+const calculateBtn2 = document.getElementById('calculateBtn2');
 
 // Resultat elementer
 const absentCostElement = document.getElementById('absentCost');
@@ -540,73 +541,110 @@ function validateAndClampNumber(inputEl, { min, max, step = 1 }, errorEl, label)
     inputEl.value = stepped;
 }
 
-let rAFHandle = null;
-function scheduleCalculate() {
-    if (rAFHandle !== null) cancelAnimationFrame(rAFHandle);
-    rAFHandle = requestAnimationFrame(() => {
-        rAFHandle = null;
-        calculateCosts();
-    });
-}
-
-// Opdater værdier når sliders ændres (instant recalc)
+// Opdater kun UI værdier når sliders ændres (ingen automatisk beregning)
 stressPercentInput.addEventListener('input', () => {
-    // slider inherent limits ensure 0-50
     stressPercentValue.textContent = `${stressPercentInput.value}%`;
-    scheduleCalculate();
+    saveState();
 });
 
 absentDaysInput.addEventListener('input', () => {
     absentDaysValue.textContent = `${absentDaysInput.value} dage`;
-    scheduleCalculate();
+    saveState();
 });
 
 productivityLossInput.addEventListener('input', () => {
-    // Fix: force instant UI + calculation sync
     productivityLossValue.textContent = `${productivityLossInput.value}%`;
-    scheduleCalculate();
+    saveState();
 });
 
 if (improvementPercentInput) {
     improvementPercentInput.addEventListener('input', () => {
         improvementPercentValue.textContent = `${improvementPercentInput.value}%`;
-        scheduleCalculate();
         saveState();
     });
 }
 if (programCostInput) {
     programCostInput.addEventListener('change', () => {
-        scheduleCalculate();
         saveState();
     });
 }
 
 // Beregn omkostninger
-calculateBtn.addEventListener('click', calculateCosts);
+calculateBtn.addEventListener('click', () => {
+    calculateCosts();
+    
+    // Send data to Google Sheets when user explicitly calculates
+    const employees = parseInt(employeesInput.value) || 0;
+    const stressPercent = parseInt(stressPercentInput.value) || 0;
+    const stressedEmployees = Math.round(employees * (stressPercent / 100));
+    const totalCostValue = parseInt(totalCostElement.textContent.replace(/[^\d]/g, '')) || 0;
+    const costPerEmployee = stressedEmployees > 0 ? totalCostValue / stressedEmployees : 0;
+    
+    sendDataToGoogleSheets({
+        employees: employees,
+        branche: brancheInput.value || 'Ikke angivet',
+        totalCost: totalCostValue,
+        costPerEmployee: costPerEmployee,
+        stressPercent: stressPercent,
+        usedImprovement: improvementPercentInput ? (improvementPercentInput.value > 0) : false,
+        region: 'Danmark',
+        timeOnSite: Math.round((Date.now() - pageLoadTime) / 1000)
+    });
+});
 
-// Beregn omkostninger ved indlæsning + load state
+// Tilføj event listener for den anden beregningsknap i forbedringssektionen
+calculateBtn2.addEventListener('click', () => {
+    calculateCosts();
+    
+    // Send data to Google Sheets when user explicitly calculates
+    const employees = parseInt(employeesInput.value) || 0;
+    const stressPercent = parseInt(stressPercentInput.value) || 0;
+    const stressedEmployees = Math.round(employees * (stressPercent / 100));
+    const totalCostValue = parseInt(totalCostElement.textContent.replace(/[^\d]/g, '')) || 0;
+    const costPerEmployee = stressedEmployees > 0 ? totalCostValue / stressedEmployees : 0;
+    
+    // Data til Google Sheets
+    sendDataToGoogleSheets({
+        employees: employees,
+        avgSalary: parseInt(avgSalaryInput.value) || 0,
+        stressPercent: stressPercent,
+        stressedEmployees: stressedEmployees,
+        absentDays: parseInt(absentDaysInput.value) || 0,
+        productivityLoss: parseInt(productivityLossInput.value) || 0,
+        absentCost: parseInt(absentCostElement.textContent.replace(/[^\d]/g, '')) || 0,
+        productivityCost: parseInt(productivityCostElement.textContent.replace(/[^\d]/g, '')) || 0,
+        turnoverCost: parseInt(turnoverCostElement.textContent.replace(/[^\d]/g, '')) || 0,
+        totalCost: totalCostValue,
+        costPerEmployee: Math.round(costPerEmployee),
+        branche: brancheSelect.value || 'Ikke angivet',
+        improvementPercent: parseInt(improvementPercentInput.value) || 0,
+        programCost: parseInt(programCostInput.value) || 0,
+        region: 'Danmark',
+        timeOnSite: Math.round((Date.now() - pageLoadTime) / 1000)
+    });
+});
+
+// Indlæs gemt tilstand ved page load
 document.addEventListener('DOMContentLoaded', () => {
     updateInputLabels();
     updateProgramLabel();
     loadState();
-    calculateCosts();
+    // Note: calculateCosts() ikke kaldt automatisk - kræver bruger klik
 });
 
-// Beregn omkostninger når input ændres (med en lille forsinkelse)
+// Beregn omkostninger når input ændres (kun gem state, beregn ikke automatisk)
 const inputElements = [employeesInput, avgSalaryInput, programCostInput].filter(Boolean);
 inputElements.forEach(element => {
-    element.addEventListener('input', debounce(() => { calculateCosts(); saveState(); }, 500));
+    element.addEventListener('input', debounce(() => { saveState(); }, 500));
 });
 
 // Immediate validation on blur/change for numeric inputs
 employeesInput.addEventListener('change', () => {
     validateAndClampNumber(employeesInput, { min: 1, max: 100000, step: 1 }, employeesError, 'Antal medarbejdere');
-    calculateCosts();
     saveState();
 });
 avgSalaryInput.addEventListener('change', () => {
     validateAndClampNumber(avgSalaryInput, { min: 0, max: 200000, step: 1 }, avgSalaryError, 'Gennemsnitlig månedsløn');
-    calculateCosts();
     saveState();
 });
 
@@ -862,59 +900,23 @@ function calculateCosts() {
         employees: employees,
         currency: currentCurrency
     });
-    
-    // Send anonymous data to Google Sheets
-    sendDataToGoogleSheets({
-        employees: employees,
-        branche: brancheInput.value || 'Ikke angivet',
-        totalCost: totalCost,
-        costPerEmployee: costPerEmployee,
-        stressPercent: stressPercent,
-        usedImprovement: improvementPercentInput ? (improvementPercentInput.value > 0) : false,
-        region: 'Danmark', // Du kan udvide dette senere
-        timeOnSite: Math.round((Date.now() - pageLoadTime) / 1000) // sekunder på siden
-    });
 }
 
-// Send anonymous data til Google Sheets
-let lastDataSent = 0;
-let hasBeenSent = false;
-let lastEmployeeCount = 0;
-let lastBranche = '';
-
+// Send anonymous data til Google Sheets (kun ved explicit beregning)
 async function sendDataToGoogleSheets(data) {
-    // Only send data if meaningful changes or first time
-    const now = Date.now();
-    const timeSinceLastSent = now - lastDataSent;
-    const isFirstCalculation = !hasBeenSent;
-    const hasSignificantChange = (data.employees !== lastEmployeeCount) || (data.branche !== lastBranche);
-    
-    // Send data only if:
-    // 1. First calculation on page, OR
-    // 2. Significant change in core data, OR  
-    // 3. At least 2 minutes since last send
-    if (isFirstCalculation || hasSignificantChange || timeSinceLastSent > 120000) {
-        try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycby_wSC8rT4F4miVmOqNgUL-Xevz0Auzh0GztqnenUWwh0eBgNXFGbytMeGAFvyFdDN6/exec', {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-            
-            // Update tracking variables
-            lastDataSent = now;
-            hasBeenSent = true;
-            lastEmployeeCount = data.employees;
-            lastBranche = data.branche;
-            
-            console.log('Data sent to Google Sheets successfully');
-        } catch (error) {
-            console.log('Error sending data to Google Sheets:', error);
-            // Fail silently - don't disturb user experience
-        }
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycby_wSC8rT4F4miVmOqNgUL-Xevz0Auzh0GztqnenUWwh0eBgNXFGbytMeGAFvyFdDN6/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        console.log('Data sent to Google Sheets successfully');
+    } catch (error) {
+        console.log('Error sending data to Google Sheets:', error);
+        // Fail silently - don't disturb user experience
     }
 }
 

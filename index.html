@@ -318,7 +318,7 @@
                         
                         <div id="chartView" class="mt-4">
                             <!-- Redesigned chart structure -->
-                            <div class="chart-wrapper">
+                            <div class="chart-wrapper" style="height: 400px; padding-bottom: 50px;">
                                 <!-- Y-axis labels - fixed positioning -->
                                 <div class="chart-y-axis">
                                     <div class="chart-y-axis-label" id="y-max" style="top: 0%;">-- kr.</div>
@@ -341,7 +341,7 @@
                                         <div id="absentBar" class="chart-bar bg-primary-500" style="height: 0%;"></div>
                                         <div id="absentBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
                                         <div class="chart-bar-label">
-                                            <span class="sm:hidden">Syge</span>
+                                            <span class="sm:hidden">Sygefravær</span>
                                             <span class="hidden sm:inline">Sygefravær</span>
                                         </div>
                                     </div>
@@ -350,7 +350,7 @@
                                         <div id="productivityBar" class="chart-bar bg-primary-400" style="height: 0%;"></div>
                                         <div id="productivityBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
                                         <div class="chart-bar-label">
-                                            <span class="sm:hidden">Prod.</span>
+                                            <span class="sm:hidden">Produktivitet</span>
                                             <span class="hidden sm:inline">Produktivitet</span>
                                         </div>
                                     </div>
@@ -359,7 +359,7 @@
                                         <div id="turnoverBar" class="chart-bar bg-primary-600" style="height: 0%;"></div>
                                         <div id="turnoverBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
                                         <div class="chart-bar-label">
-                                            <span class="sm:hidden">Udskift.</span>
+                                            <span class="sm:hidden">Udskiftning</span>
                                             <span class="hidden sm:inline">Udskiftning</span>
                                         </div>
                                     </div>
@@ -456,6 +456,13 @@
                             </div>
                             <input type="number" id="programCost" min="0" value="0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
                         </div>
+                        
+                        <button id="calculateBtn2" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1zm1-4a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                            </svg>
+                            Beregn omkostninger
+                        </button>
                     </div>
 
                     <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
