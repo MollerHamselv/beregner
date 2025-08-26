@@ -13,6 +13,16 @@ function trackEvent(eventName, properties = {}) {
     }
 }
 
+// Performance tracking helper
+function trackPerformance(metricName, value, properties = {}) {
+    if (typeof window !== 'undefined' && window.va) {
+        window.va('track', `performance_${metricName}`, {
+            value: value,
+            ...properties
+        });
+    }
+}
+
 // Elementer
 const employeesInput = document.getElementById('employees');
 const avgSalaryInput = document.getElementById('avgSalary');
@@ -541,6 +551,9 @@ function loadState() {
 }
 
 function calculateCosts() {
+    // Performance tracking - start timer
+    const calcStartTime = performance.now();
+    
     // Track calculation event
     trackEvent('calculation_performed', {
         employees: parseInt(employeesInput.value) || 0,
@@ -652,6 +665,16 @@ function calculateCosts() {
     if (ctaModal.style.display === 'block') {
         updateModalValues();
     }
+    
+    // Performance tracking - end timer
+    const calcEndTime = performance.now();
+    const calcDuration = calcEndTime - calcStartTime;
+    
+    // Track calculation performance
+    trackPerformance('calculation_time', calcDuration, {
+        employees: employees,
+        currency: currentCurrency
+    });
 }
 
 // Afrund til et pænt tal for y-aksen
@@ -703,3 +726,25 @@ if (globalCurrencySelect) {
         saveState();
     });
 }
+
+// Page load performance tracking
+window.addEventListener('load', () => {
+    // Track page load time
+    const loadTime = performance.now();
+    trackPerformance('page_load', loadTime);
+    
+    // Track Core Web Vitals when available
+    if ('web-vital' in window) {
+        window.webVitals.getLCP((lcp) => {
+            trackPerformance('lcp', lcp.value);
+        });
+        
+        window.webVitals.getFID((fid) => {
+            trackPerformance('fid', fid.value);
+        });
+        
+        window.webVitals.getCLS((cls) => {
+            trackPerformance('cls', cls.value);
+        });
+    }
+});
