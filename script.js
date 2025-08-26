@@ -752,14 +752,24 @@ function calculateCosts() {
     // Beregn omkostning pr. stressramt medarbejder
     const costPerEmployee = stressedEmployees > 0 ? totalCost / stressedEmployees : 0;
     
-    // Opdater resultater med formaterede tal
+    // Opdater resultater med formaterede tal og korrekte farver
     absentCostElement.textContent = formatCurrency(absentCost);
+    absentCostElement.className = "text-2xl font-bold text-gray-800";
+    
     productivityCostElement.textContent = formatCurrency(productivityCost);
+    productivityCostElement.className = "text-2xl font-bold text-gray-800";
+    
     turnoverCostElement.textContent = formatCurrency(turnoverCost);
+    turnoverCostElement.className = "text-2xl font-bold text-gray-800";
+    
     totalCostElement.textContent = formatCurrency(totalCost);
+    totalCostElement.className = "text-2xl font-bold text-red-600";
+    
     stressedEmployeesElement.textContent = stressedEmployees;
     totalEmployeesElement.textContent = employees;
+    
     costPerEmployeeElement.textContent = formatCurrency(costPerEmployee);
+    costPerEmployeeElement.className = "font-semibold text-gray-800";
 
     // Forbedret scenarie beregning
     const improvementPercent = improvementPercentInput ? (parseInt(improvementPercentInput.value) || 0) : 0;
@@ -769,8 +779,14 @@ function calculateCosts() {
     const improvedTotal = Math.max(0, totalCost - savings + programCost);
     const roi = programCost > 0 ? (savings / programCost) : 0;
 
-    if (currentTotalForCompare) currentTotalForCompare.textContent = formatCurrency(totalCost);
-    if (improvedTotalCostEl) improvedTotalCostEl.textContent = formatCurrency(improvedTotal);
+    if (currentTotalForCompare) {
+        currentTotalForCompare.textContent = formatCurrency(totalCost);
+        currentTotalForCompare.className = "text-xl font-bold text-gray-800";
+    }
+    if (improvedTotalCostEl) {
+        improvedTotalCostEl.textContent = formatCurrency(improvedTotal);
+        improvedTotalCostEl.className = "text-xl font-bold text-gray-800";
+    }
     if (savingsAmountEl) savingsAmountEl.textContent = formatCurrency(savings);
     if (roiValueEl) roiValueEl.textContent = `${(roi * 100).toFixed(0)}%`;
     
@@ -792,16 +808,28 @@ function calculateCosts() {
     productivityBar.style.height = `${(productivityCost / roundedMax) * 100}%`;
     turnoverBar.style.height = `${(turnoverCost / roundedMax) * 100}%`;
     
-    // Opdater værdier under søjlerne
+    // Opdater værdier under søjlerne med korrekte farver
     absentBarValue.textContent = formatCurrency(absentCost);
-    productivityBarValue.textContent = formatCurrency(productivityCost);
-    turnoverBarValue.textContent = formatCurrency(turnoverCost);
+    absentBarValue.className = "chart-bar-value text-gray-800";
     
-    // Opdater tabel
+    productivityBarValue.textContent = formatCurrency(productivityCost);
+    productivityBarValue.className = "chart-bar-value text-gray-800";
+    
+    turnoverBarValue.textContent = formatCurrency(turnoverCost);
+    turnoverBarValue.className = "chart-bar-value text-gray-800";
+    
+    // Opdater tabel med korrekte farver
     tableAbsentCost.textContent = formatCurrency(absentCost);
+    tableAbsentCost.className = "py-2 px-4 text-sm text-right text-gray-700";
+    
     tableProductivityCost.textContent = formatCurrency(productivityCost);
+    tableProductivityCost.className = "py-2 px-4 text-sm text-right text-gray-700";
+    
     tableTurnoverCost.textContent = formatCurrency(turnoverCost);
+    tableTurnoverCost.className = "py-2 px-4 text-sm text-right text-gray-700";
+    
     tableTotalCost.textContent = formatCurrency(totalCost);
+    tableTotalCost.className = "py-2 px-4 text-sm text-right text-red-600";
     
     // Beregn procentdele til tabellen
     if (totalCost > 0) {

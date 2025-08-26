@@ -234,7 +234,7 @@
                                             <span class="tooltip-text">De direkte omkostninger ved sygefravær beregnet ud fra antal sygedage og lønomkostninger for stressramte medarbejdere.</span>
                                         </div>
                                     </div>
-                                    <p id="absentCost" class="text-2xl font-bold text-gray-800">0 kr.</p>
+                                    <p id="absentCost" class="text-2xl font-bold text-gray-400">-- kr.</p>
                                 </div>
                                 <div class="result-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                                     <div class="flex items-center">
@@ -244,7 +244,7 @@
                                             <span class="tooltip-text">Omkostninger ved nedsat produktivitet hos stressramte medarbejdere, når de er på arbejde men ikke fungerer optimalt.</span>
                                         </div>
                                     </div>
-                                    <p id="productivityCost" class="text-2xl font-bold text-gray-800">0 kr.</p>
+                                    <p id="productivityCost" class="text-2xl font-bold text-gray-400">-- kr.</p>
                                 </div>
                                 <div class="result-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                                     <div class="flex items-center">
@@ -254,7 +254,7 @@
                                             <span class="tooltip-text">Omkostninger ved at stressramte medarbejdere forlader virksomheden, inkl. rekruttering og oplæring af nye medarbejdere.</span>
                                         </div>
                                     </div>
-                                    <p id="turnoverCost" class="text-2xl font-bold text-gray-800">0 kr.</p>
+                                    <p id="turnoverCost" class="text-2xl font-bold text-gray-400">-- kr.</p>
                                 </div>
                                 <div class="result-card bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                                     <div class="flex items-center">
@@ -264,7 +264,7 @@
                                             <span class="tooltip-text">De totale årlige omkostninger ved stress i virksomheden, summen af alle ovenstående kategorier.</span>
                                         </div>
                                     </div>
-                                    <p id="totalCost" class="text-2xl font-bold text-red-600">0 kr.</p>
+                                    <p id="totalCost" class="text-2xl font-bold text-gray-400">-- kr.</p>
                                 </div>
                             </div>
                             
@@ -274,11 +274,11 @@
                                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                                     </svg>
                                     <p class="text-sm text-primary-800">
-                                        <span id="stressedEmployees">0</span> ud af <span id="totalEmployees">0</span> medarbejdere er påvirket af stress
+                                        <span id="stressedEmployees">--</span> ud af <span id="totalEmployees">--</span> medarbejdere er påvirket af stress
                                     </p>
                                 </div>
                                 <p class="text-sm text-primary-800 mt-1 ml-7">
-                                    Gennemsnitlig omkostning pr. stressramt medarbejder: <span id="costPerEmployee" class="font-semibold">0 kr.</span>
+                                    Gennemsnitlig omkostning pr. stressramt medarbejder: <span id="costPerEmployee" class="font-semibold text-gray-400">-- kr.</span>
                                 </p>
                             </div>
                         </div>
@@ -298,10 +298,10 @@
                             <div class="chart-wrapper">
                                 <!-- Y-axis labels - fixed positioning -->
                                 <div class="chart-y-axis">
-                                    <div class="chart-y-axis-label" id="y-max" style="top: 0%;">0 kr.</div>
-                                    <div class="chart-y-axis-label" style="top: 25%;">0 kr.</div>
-                                    <div class="chart-y-axis-label" style="top: 50%;">0 kr.</div>
-                                    <div class="chart-y-axis-label" style="top: 75%;">0 kr.</div>
+                                    <div class="chart-y-axis-label" id="y-max" style="top: 0%;">-- kr.</div>
+                                    <div class="chart-y-axis-label" style="top: 25%;">-- kr.</div>
+                                    <div class="chart-y-axis-label" style="top: 50%;">-- kr.</div>
+                                    <div class="chart-y-axis-label" style="top: 75%;">-- kr.</div>
                                     <div class="chart-y-axis-label" style="top: 100%;">0 kr.</div>
                                 </div>
                                 
@@ -316,19 +316,19 @@
                                 <div class="chart-container">
                                     <div class="chart-bar-container">
                                         <div id="absentBar" class="chart-bar bg-primary-500" style="height: 0%;"></div>
-                                        <div id="absentBarValue" class="chart-bar-value">0 kr.</div>
+                                        <div id="absentBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
                                         <div class="chart-bar-label">Sygefravær</div>
                                     </div>
                                     
                                     <div class="chart-bar-container">
                                         <div id="productivityBar" class="chart-bar bg-primary-400" style="height: 0%;"></div>
-                                        <div id="productivityBarValue" class="chart-bar-value">0 kr.</div>
+                                        <div id="productivityBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
                                         <div class="chart-bar-label">Produktivitet</div>
                                     </div>
                                     
                                     <div class="chart-bar-container">
                                         <div id="turnoverBar" class="chart-bar bg-primary-600" style="height: 0%;"></div>
-                                        <div id="turnoverBarValue" class="chart-bar-value">0 kr.</div>
+                                        <div id="turnoverBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
                                         <div class="chart-bar-label">Udskiftning</div>
                                     </div>
                                 </div>
@@ -348,22 +348,22 @@
                                     <tbody class="divide-y divide-gray-200">
                                         <tr>
                                             <td class="py-2 px-4 text-sm text-gray-700">Sygefravær</td>
-                                            <td id="tableAbsentCost" class="py-2 px-4 text-sm text-right text-gray-700">0 kr.</td>
+                                            <td id="tableAbsentCost" class="py-2 px-4 text-sm text-right text-gray-400">-- kr.</td>
                                             <td id="tableAbsentPercent" class="py-2 px-4 text-sm text-right text-gray-700">0%</td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 px-4 text-sm text-gray-700">Produktivitetstab</td>
-                                            <td id="tableProductivityCost" class="py-2 px-4 text-sm text-right text-gray-700">0 kr.</td>
+                                            <td id="tableProductivityCost" class="py-2 px-4 text-sm text-right text-gray-400">-- kr.</td>
                                             <td id="tableProductivityPercent" class="py-2 px-4 text-sm text-right text-gray-700">0%</td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 px-4 text-sm text-gray-700">Udskiftning af personale</td>
-                                            <td id="tableTurnoverCost" class="py-2 px-4 text-sm text-right text-gray-700">0 kr.</td>
+                                            <td id="tableTurnoverCost" class="py-2 px-4 text-sm text-right text-gray-400">-- kr.</td>
                                             <td id="tableTurnoverPercent" class="py-2 px-4 text-sm text-right text-gray-700">0%</td>
                                         </tr>
                                         <tr class="bg-gray-50 font-medium">
                                             <td class="py-2 px-4 text-sm text-gray-700">Total</td>
-                                            <td id="tableTotalCost" class="py-2 px-4 text-sm text-right text-red-600">0 kr.</td>
+                                            <td id="tableTotalCost" class="py-2 px-4 text-sm text-right text-gray-400">-- kr.</td>
                                             <td class="py-2 px-4 text-sm text-right text-gray-700">100%</td>
                                         </tr>
                                     </tbody>
@@ -412,11 +412,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="result-card bg-gray-50 p-3 rounded-md border border-gray-200">
                                 <div class="text-gray-500 text-sm">Total (nuværende)</div>
-                                <div id="currentTotalForCompare" class="text-xl font-bold text-gray-800">0 kr.</div>
+                                <div id="currentTotalForCompare" class="text-xl font-bold text-gray-400">-- kr.</div>
                             </div>
                             <div class="result-card bg-gray-50 p-3 rounded-md border border-gray-200">
                                 <div class="text-gray-500 text-sm">Total (forbedret)</div>
-                                <div id="improvedTotalCost" class="text-xl font-bold text-gray-800">0 kr.</div>
+                                <div id="improvedTotalCost" class="text-xl font-bold text-gray-400">-- kr.</div>
                             </div>
                             <div class="result-card bg-gray-50 p-3 rounded-md border border-gray-200">
                                 <div class="text-gray-500 text-sm">Besparelse</div>
