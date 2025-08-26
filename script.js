@@ -178,6 +178,7 @@ function trackPerformance(metricName, value, properties = {}) {
 
 // Elementer
 const employeesInput = document.getElementById('employees');
+const brancheInput = document.getElementById('branche');
 const avgSalaryInput = document.getElementById('avgSalary');
 const stressPercentInput = document.getElementById('stressPercent');
 const stressPercentValue = document.getElementById('stressPercentValue');
@@ -649,7 +650,7 @@ function debounce(func, wait) {
 }
 
 // State persistence (URL params + localStorage)
-const STATE_KEYS = ['employees','avgSalary','stressPercent','absentDays','productivityLoss','improvementPercent','programCost','locale'];
+const STATE_KEYS = ['employees','branche','avgSalary','stressPercent','absentDays','productivityLoss','improvementPercent','programCost','locale'];
 
 function saveState() {
     const state = {
@@ -861,7 +862,40 @@ function calculateCosts() {
         employees: employees,
         currency: currentCurrency
     });
+    
+    // Send anonymous data to Google Sheets
+    sendDataToGoogleSheets({
+        employees: employees,
+        branche: brancheInput.value || 'Ikke angivet',
+        totalCost: totalCost,
+        costPerEmployee: costPerEmployee,
+        stressPercent: stressPercent,
+        usedImprovement: improvementPercentInput ? (improvementPercentInput.value > 0) : false,
+        region: 'Danmark', // Du kan udvide dette senere
+        timeOnSite: Math.round((Date.now() - pageLoadTime) / 1000) // sekunder på siden
+    });
 }
+
+// Send anonymous data til Google Sheets
+async function sendDataToGoogleSheets(data) {
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycby_wSC8rT4F4miVmOqNgUL-Xevz0Auzh0GztqnenUWwh0eBgNXFGbytMeGAFvyFdDN6/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        console.log('Data sent to Google Sheets successfully');
+    } catch (error) {
+        console.log('Error sending data to Google Sheets:', error);
+        // Fail silently - don't disturb user experience
+    }
+}
+
+// Track when page loads
+let pageLoadTime = Date.now();
 
 // Afrund til et pænt tal for y-aksen
 function roundToNiceNumber(value) {
