@@ -1,6 +1,6 @@
 // api/collect.js
 // Serverless backend på Vercel. SAFE_MODE gør, at intet sendes videre, før du er klar.
-const SAFE_MODE = true;  // ← sæt til false, når du vil aktivere "rigtig" videresendelse
+const SAFE_MODE = false;  // ← sæt til false, når du vil aktivere "rigtig" videresendelse
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
