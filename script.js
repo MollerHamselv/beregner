@@ -3,6 +3,9 @@
     emailjs.init('WxsFcH0Ah_J79S9tO'); // Replace with your actual EmailJS user ID
 })();
 
+// Initialize page load time for tracking
+let pageLoadTime = Date.now();
+
 // Cookie Consent Management
 const cookieConsent = {
     translations: {
@@ -611,8 +614,6 @@ calculateBtn2.addEventListener('click', () => {
 // Indlæs gemt tilstand ved page load
 document.addEventListener('DOMContentLoaded', () => {
     initializeChart(); // Initialize chart on page load
-    updateInputLabels();
-    updateProgramLabel();
     loadState();
     // Note: calculateCosts() ikke kaldt automatisk - kræver bruger klik
 });
@@ -631,33 +632,6 @@ employeesInput.addEventListener('change', () => {
 avgSalaryInput.addEventListener('change', () => {
     validateAndClampNumber(avgSalaryInput, { min: 0, max: 200000, step: 1 }, avgSalaryError, 'Gennemsnitlig månedsløn');
     saveState();
-});
-
-// Håndter kontaktformular med EmailJS
-contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Vis loading-indikator
-    submitBtn.disabled = true;
-    submitBtn.classList.add('opacity-75');
-    submitBtn.innerHTML = 'Sender...';
-    
-    // Send email via EmailJS
-    emailjs.sendForm('service_vqez58l', 'template_d4qaffp', this)
-        .then(function() {
-            // Success
-            contactFormContainer.style.display = 'none';
-            formSuccess.classList.remove('hidden');
-        }, function(error) {
-            // Error
-            alert('Der opstod en fejl ved afsendelse: ' + JSON.stringify(error));
-        })
-        .finally(function() {
-            // Nulstil knappen
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('opacity-75');
-            submitBtn.innerHTML = 'Send forespørgsel';
-        });
 });
 
 // Debounce funktion for at undgå for mange beregninger
@@ -912,9 +886,28 @@ function calculateCosts() {
     });
 }
 
-// Send anonymous data til Google Sheets (kun ved explicit beregning)
+// Send anonymous data til backend API (kun ved explicit beregning)
 async function sendDataToGoogleSheets(data) {
     try {
+        // MIGRATION: Nu bruger vi sikker backend API i stedet for direkte Google Sheets
+        // Ny, sikker indsendelse (ingen no-cors, ingen hemmelige URLs i frontend)
+        const success = await sendToCollectAPI({
+            employees: data.employees,
+            industry: data.industry || 'unknown',
+            salary: data.salary,
+            stressPct: data.stressPct,
+            // Map din eksisterende data struktur til API format
+            currency: data.currency
+        });
+        
+        if (success) {
+            console.log('Data sent via backend API successfully');
+        } else {
+            console.log('Backend API unavailable - data not collected');
+        }
+        
+        // LEGACY CODE (deaktiveret) - kan slettes senere når backend er testet
+        /*
         const response = await fetch('https://script.google.com/macros/s/AKfycby_wSC8rT4F4miVmOqNgUL-Xevz0Auzh0GztqnenUWwh0eBgNXFGbytMeGAFvyFdDN6/exec', {
             method: 'POST',
             mode: 'no-cors',
@@ -924,25 +917,66 @@ async function sendDataToGoogleSheets(data) {
             body: JSON.stringify(data)
         });
         console.log('Data sent to Google Sheets successfully');
+        */
     } catch (error) {
-        console.log('Error sending data to Google Sheets:', error);
+        console.log('Error sending data:', error);
         // Fail silently - don't disturb user experience
     }
 }
 
 // New currency formatting functions
 function parseCurrencySelect(val) {
-    const [code, locale] = val.split('|');
+    if (!val || typeof val !== 'string') {
+        return {code: 'DKK', locale: 'da-DK'};
+    }
+    const parts = val.split('|');
+    const code = parts[0] || 'DKK';
+    const locale = parts[1] || 'da-DK';
     return {code, locale};
 }
 
 function fmtMoney(amount) {
-    const {code, locale} = parseCurrencySelect(globalCurrencySelect.value);
-    return new Intl.NumberFormat(locale, {
-        style: 'currency',
-        currency: code,
-        maximumFractionDigits: 0
-    }).format(Math.round(amount));
+    try {
+        const selectValue = globalCurrencySelect?.value || 'DKK|da-DK';
+        const {code, locale} = parseCurrencySelect(selectValue);
+        
+        // Fallback hvis currency code er tom
+        const currencyCode = code || 'DKK';
+        const localeCode = locale || 'da-DK';
+        
+        return new Intl.NumberFormat(localeCode, {
+            style: 'currency',
+            currency: currencyCode,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    } catch (error) {
+        console.warn('Currency formatting error:', error);
+        // Fallback til simpel formattering
+        return `${amount} DKK`;
+    }
+}
+
+// Backend API helper function
+async function sendToCollectAPI(data) {
+  // Tilføj samtykke + honeypot til payload
+  const payload = { ...data, consent: true, _hp: '' };
+  try {
+    const res = await fetch('/api/collect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      credentials: 'same-origin'
+    });
+    const json = await res.json().catch(()=>({ ok:false }));
+    if (!res.ok || !json.ok) {
+      console.warn('collect failed', json);
+    }
+    return json.ok === true;
+  } catch (error) {
+    console.warn('Backend API unavailable, data not collected:', error);
+    return false;
+  }
 }
 
 function updateAllCurrencyDisplays() {
@@ -974,9 +1008,6 @@ function setExportEnabled(enabled) {
         }
     });
 }
-
-// Track when page loads
-let pageLoadTime = Date.now();
 
 // Afrund til et pænt tal for y-aksen
 function roundToNiceNumber(value) {
