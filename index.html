@@ -68,8 +68,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen p-4 md:p-8">
-    <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-primary-500 to-primary-700 p-6 text-white">
+    <div id="page" class="max-w-[1200px] mx-auto px-4 md:px-8">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-primary-500 to-primary-700 p-6 text-white">
             <div class="header-container">
                 <div class="header-content">
                     <h1 class="text-2xl md:text-3xl font-bold">Omkostningsberegner for Medarbejderstress</h1>
@@ -93,11 +94,11 @@
                         </div>
                     </div>
                     <select id="globalCurrencySelect" class="text-sm border border-gray-200 rounded-md px-3 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 min-w-[150px]">
-                        <option value="da-DK,DKK" selected>DKK (da-DK)</option>
-                        <option value="en-US,USD">USD (en-US)</option>
-                        <option value="en-GB,GBP">GBP (en-GB)</option>
-                        <option value="de-DE,EUR">EUR (de-DE)</option>
-                        <option value="sv-SE,SEK">SEK (sv-SE)</option>
+                        <option value="DKK|da-DK" selected>DKK (Danmark)</option>
+                        <option value="USD|en-US">USD (USA)</option>
+                        <option value="GBP|en-GB">GBP (Storbritannien)</option>
+                        <option value="EUR|de-DE">EUR (Tyskland)</option>
+                        <option value="SEK|sv-SE">SEK (Sverige)</option>
                     </select>
                 </div>
             </div>
@@ -111,7 +112,7 @@
                 </p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div id="formGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="bg-gray-50 p-6 rounded-lg">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Virksomhedsoplysninger</h2>
                     
@@ -230,12 +231,12 @@
                         </button>
                         <!-- Export actions below the calculate button -->
                         <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <button id="exportCsvBtn" class="w-full flex items-center justify-center gap-2 text-gray-700 bg-white border border-gray-200 hover:text-gray-900 hover:bg-gray-50 px-3 py-2 rounded-md" data-testid="export-csv">
+                            <button id="btnExportCsv" disabled class="w-full flex items-center justify-center gap-2 text-gray-700 bg-white border border-gray-200 opacity-50 cursor-not-allowed px-3 py-2 rounded-md" data-testid="export-csv">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a2 2 0 012-2h4a1 1 0 010 2H5v12h4a1 1 0 110 2H5a2 2 0 01-2-2V4z"/><path d="M9 9a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1zM10 12a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"/></svg>
                                 Exportér CSV
                             </button>
-                            <button id="exportPdfBtn" class="w-full flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-md" data-testid="export-pdf">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V9l-4-4H4z"/><path d="M14 9h-3a1 1 0 01-1-1V5"/></svg>
+                            <button id="btnExportPdf" disabled class="w-full flex items-center justify-center gap-2 bg-primary-500 text-white opacity-50 cursor-not-allowed px-3 py-2 rounded-md" data-testid="export-pdf">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V9l-4-4H4z"/><path d="M14 9h-3a1 1 0 01-1V5"/></svg>
                                 Exportér PDF
                             </button>
                         </div>
@@ -311,63 +312,17 @@
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                             <h2 class="text-xl font-semibold text-gray-800">Visualisering</h2>
                             <div class="flex space-x-2">
-                                <div id="chartTab" class="tab active px-3 py-1">Graf</div>
-                                <div id="tableTab" class="tab px-3 py-1">Tabel</div>
+                                <button id="openChartModal" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M1.5 14.5a.5.5 0 0 1-.5-.5V2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2zm4-7a.5.5 0 0 1-.5-.5V2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-2zm4 7a.5.5 0 0 1-.5-.5V5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2z"/>
+                                    </svg>
+                                    Åbn Graf
+                                </button>
+                                <div id="tableTab" class="tab active px-3 py-1">Tabel</div>
                             </div>
                         </div>
                         
-                        <div id="chartView" class="mt-4">
-                            <!-- Redesigned chart structure -->
-                            <div class="chart-wrapper" style="height: 400px; padding-bottom: 50px;">
-                                <!-- Y-axis labels - fixed positioning -->
-                                <div class="chart-y-axis">
-                                    <div class="chart-y-axis-label" id="y-max" style="top: 0%;">-- kr.</div>
-                                    <div class="chart-y-axis-label" style="top: 25%;">-- kr.</div>
-                                    <div class="chart-y-axis-label" style="top: 50%;">-- kr.</div>
-                                    <div class="chart-y-axis-label" style="top: 75%;">-- kr.</div>
-                                    <div class="chart-y-axis-label" style="top: 100%;">0 kr.</div>
-                                </div>
-                                
-                                <!-- Grid lines - aligned with y-axis labels -->
-                                <div class="chart-grid-line"></div>
-                                <div class="chart-grid-line"></div>
-                                <div class="chart-grid-line"></div>
-                                <div class="chart-grid-line"></div>
-                                <div class="chart-grid-line"></div>
-                                
-                                <!-- Chart bars container -->
-                                <div class="chart-container">
-                                    <div class="chart-bar-container">
-                                        <div id="absentBar" class="chart-bar bg-primary-500" style="height: 0%;"></div>
-                                        <div id="absentBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
-                                        <div class="chart-bar-label">
-                                            <span class="sm:hidden">Sygefravær</span>
-                                            <span class="hidden sm:inline">Sygefravær</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chart-bar-container">
-                                        <div id="productivityBar" class="chart-bar bg-primary-400" style="height: 0%;"></div>
-                                        <div id="productivityBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
-                                        <div class="chart-bar-label">
-                                            <span class="sm:hidden">Produktivitet</span>
-                                            <span class="hidden sm:inline">Produktivitet</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="chart-bar-container">
-                                        <div id="turnoverBar" class="chart-bar bg-primary-600" style="height: 0%;"></div>
-                                        <div id="turnoverBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
-                                        <div class="chart-bar-label">
-                                            <span class="sm:hidden">Udskiftning</span>
-                                            <span class="hidden sm:inline">Udskiftning</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="tableView" class="mt-4 hidden">
+                        <div id="tableView" class="mt-4">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full bg-white">
                                     <thead class="bg-gray-100">
@@ -416,7 +371,7 @@
                 
                 <!-- Forklaringsboks -->
                 <div class="bg-primary-50 p-4 rounded-lg mb-6 border-l-4 border-primary-500">
-                    <h3 class="text-md font-semibold text-primary-800 mb-2">Hvordan virker forbedringscalculatoren?</h3>
+                    <h3 class="text-md font-semibold text-primary-800 mb-2">Hvordan virker forbedringskalkulatoren?</h3>
                     <p class="text-gray-700 text-sm mb-3">
                         Denne sektion hjælper dig med at vurdere værdien af at investere i stressforebyggelse og trivselsinitiativer.
                     </p>
@@ -427,8 +382,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
+                <div id="improvementGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Forbedringsinput</h3>
+                        
                         <div>
                             <div class="flex items-center mb-2">
                                 <label class="block text-gray-700" for="improvementPercent">Forventet forbedring (%)</label>
@@ -461,13 +418,13 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1zm1-4a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
                             </svg>
-                            Beregn omkostninger
+                            Beregn forbedring
                         </button>
                     </div>
 
-                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Sammenligning</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Sammenligning & ROI</h3>
+                        <div class="grid grid-cols-2 gap-4">
                             <div class="result-card bg-gray-50 p-3 rounded-md border border-gray-200">
                                 <div class="text-gray-500 text-sm">Total (nuværende)</div>
                                 <div id="currentTotalForCompare" class="text-xl font-bold text-gray-400">-- kr.</div>
@@ -539,113 +496,6 @@
             </p>
         </div>
     </div>
-    
-    <!-- CTA Popup Button -->
-    <button id="ctaButton" class="cta-button bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-        </svg>
-        Få hjælp til stresshåndtering
-    </button>
-    
-    <!-- Modal -->
-    <div id="ctaModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" id="closeModal">&times;</span>
-            <div class="bg-gradient-to-r from-primary-500 to-primary-700 p-6 text-white">
-                <div class="header-container">
-                    <div class="header-content">
-                        <h2 class="text-2xl font-bold">Få hjælp til at reducere stress på arbejdspladsen</h2>
-                        <p class="mt-2 opacity-90">Lad os hjælpe dig med at mindske omkostningerne ved stress i din virksomhed</p>
-                    </div>
-                    <div class="logo-container">
-                        <img src="https://assets.ycodeapp.com/assets/app87248/Images/til%20forms%20(1)-oqsemermuy.webp" alt="Medica Pro Logo" class="logo" style="max-height: 60px;">
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <div class="mb-6">
-                    <p class="text-gray-700">
-                        Medica Pro tilbyder skræddersyede løsninger til at forebygge og håndtere stress på arbejdspladsen. 
-                        Vores eksperter kan hjælpe med at implementere effektive strategier, der reducerer omkostningerne og 
-                        forbedrer medarbejdernes trivsel og produktivitet.
-                    </p>
-                    <div class="mt-4 bg-primary-50 p-4 rounded-lg border border-primary-100">
-                        <h3 class="font-medium text-primary-800">Din beregning viser:</h3>
-                        <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
-                            <div>
-                                <span class="text-gray-600">Samlede omkostninger:</span>
-                                <span id="modalTotalCost" class="font-bold text-red-600 ml-1">0 kr.</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-600">Stressramte medarbejdere:</span>
-                                <span id="modalStressedEmployees" class="font-bold text-gray-800 ml-1">0</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-600">Omkostning pr. medarbejder:</span>
-                                <span id="modalCostPerEmployee" class="font-bold text-gray-800 ml-1">0 kr.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Kontaktformular -->
-                <div id="contactFormContainer">
-                    <form id="contactForm" class="space-y-4" 
-                        <!-- Beregningsresultater som skjulte felter -->
-                        <input type="hidden" id="formTotalCost" name="totalCost" value="0">
-                        <input type="hidden" id="formStressedEmployees" name="stressedEmployees" value="0">
-                        <input type="hidden" id="formCostPerEmployee" name="costPerEmployee" value="0">
-                        <input type="hidden" id="formAbsentCost" name="absentCost" value="0">
-                        <input type="hidden" id="formProductivityCost" name="productivityCost" value="0">
-                        <input type="hidden" id="formTurnoverCost" name="turnoverCost" value="0">
-                        
-                        <div>
-                            <label for="name" class="block text-gray-700 mb-1 text-sm">Navn</label>
-                            <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" required>
-                        </div>
-                        <div>
-                            <label for="company" class="block text-gray-700 mb-1 text-sm">Virksomhed</label>
-                            <input type="text" id="company" name="company" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" required>
-                        </div>
-                        <div>
-                            <label for="email" class="block text-gray-700 mb-1 text-sm">E-mail</label>
-                            <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" required>
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-gray-700 mb-1 text-sm">Telefon</label>
-                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" required>
-                        </div>
-                        <div>
-                            <label for="message" class="block text-gray-700 mb-1 text-sm">Besked (valgfri)</label>
-                            <textarea id="message" name="message" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="consent" name="consent" value="Ja" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded" required>
-                            <label for="consent" class="ml-2 block text-sm text-gray-700">
-                                Jeg accepterer, at Medica Pro må kontakte mig vedrørende min henvendelse
-                            </label>
-                        </div>
-                        <button type="submit" id="submitBtn" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-md transition duration-300 ease-in-out">
-                            Send forespørgsel
-                        </button>
-                    </form>
-                </div>
-                
-                
-                <!-- Success besked (vises efter formular er sendt) -->
-                <div id="formSuccess" class="hidden mt-4 p-6 bg-green-50 text-center rounded-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <h3 class="text-xl font-medium text-green-800 mb-2">Tak for din henvendelse!</h3>
-                    <p class="text-green-700">
-                        Vi har modtaget din forespørgsel og kontakter dig hurtigst muligt.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Cookie Consent Popup -->
     <div id="cookieConsent" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -684,11 +534,89 @@
     <!-- Add EmailJS script - defer for FCP optimization -->
     <script defer type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
+    <!-- Chart Modal -->
+    <div id="chartModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-primary-500 to-primary-700 text-white p-6 flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Omkostningsanalyse - Visualisering</h2>
+                <button id="closeChartModal" class="text-white hover:text-gray-200 transition-colors">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px);">
+                <!-- Large Chart Container -->
+                <div class="chart-wrapper" style="height: 500px; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <!-- Y-axis labels -->
+                    <div class="chart-y-axis">
+                        <div class="chart-y-axis-label" id="modal-y-max" style="top: 0%;">-- kr.</div>
+                        <div class="chart-y-axis-label" id="modal-y-75" style="top: 25%;">-- kr.</div>
+                        <div class="chart-y-axis-label" id="modal-y-50" style="top: 50%;">-- kr.</div>
+                        <div class="chart-y-axis-label" id="modal-y-25" style="top: 75%;">-- kr.</div>
+                        <div class="chart-y-axis-label" id="modal-y-0" style="top: 100%;">0 kr.</div>
+                    </div>
+                    
+                    <!-- Grid lines -->
+                    <div class="chart-grid-line"></div>
+                    <div class="chart-grid-line"></div>
+                    <div class="chart-grid-line"></div>
+                    <div class="chart-grid-line"></div>
+                    <div class="chart-grid-line"></div>
+                    
+                    <!-- Chart bars container -->
+                    <div class="chart-container">
+                        <div class="chart-bar-container">
+                            <div id="modalAbsentBar" class="chart-bar bg-primary-500" style="height: 0%;"></div>
+                            <div id="modalAbsentBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
+                            <div class="chart-bar-label">Sygefravær</div>
+                        </div>
+                        
+                        <div class="chart-bar-container">
+                            <div id="modalProductivityBar" class="chart-bar bg-primary-400" style="height: 0%;"></div>
+                            <div id="modalProductivityBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
+                            <div class="chart-bar-label">Produktivitetstab</div>
+                        </div>
+                        
+                        <div class="chart-bar-container">
+                            <div id="modalTurnoverBar" class="chart-bar bg-primary-600" style="height: 0%;"></div>
+                            <div id="modalTurnoverBarValue" class="chart-bar-value text-gray-400">-- kr.</div>
+                            <div class="chart-bar-label">Udskiftning</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Legend/Info -->
+                <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Forklaring</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 bg-primary-500 rounded"></div>
+                            <span><strong>Sygefravær:</strong> Direkte omkostninger ved stressrelateret sygdom</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 bg-primary-400 rounded"></div>
+                            <span><strong>Produktivitetstab:</strong> Reduceret effektivitet hos stressramte medarbejdere</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 bg-primary-600 rounded"></div>
+                            <span><strong>Udskiftning:</strong> Omkostninger ved at ansætte og oplære nye medarbejdere</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- PDF export scripts - lazy load since they're only needed on export -->
     <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
     
     <!-- Main application script -->
     <script defer src="script.js"></script>
+    </div> <!-- End page container -->
 </body>
 </html>

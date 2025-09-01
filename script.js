@@ -195,13 +195,34 @@ const productivityCostElement = document.getElementById('productivityCost');
 const turnoverCostElement = document.getElementById('turnoverCost');
 const totalCostElement = document.getElementById('totalCost');
 
-// Graf elementer
-const absentBar = document.getElementById('absentBar');
-const productivityBar = document.getElementById('productivityBar');
-const turnoverBar = document.getElementById('turnoverBar');
-const absentBarValue = document.getElementById('absentBarValue');
-const productivityBarValue = document.getElementById('productivityBarValue');
-const turnoverBarValue = document.getElementById('turnoverBarValue');
+// Graf elementer (fjernet fra hovedvisning, flyttet til modal)
+const absentBar = null; // Removed from main view
+const productivityBar = null; // Removed from main view
+const turnoverBar = null; // Removed from main view
+const absentBarValue = null; // Removed from main view
+const productivityBarValue = null; // Removed from main view
+const turnoverBarValue = null; // Removed from main view
+
+// Modal chart elementer
+const modalAbsentBar = document.getElementById('modalAbsentBar');
+const modalProductivityBar = document.getElementById('modalProductivityBar');
+const modalTurnoverBar = document.getElementById('modalTurnoverBar');
+const modalAbsentBarValue = document.getElementById('modalAbsentBarValue');
+const modalProductivityBarValue = document.getElementById('modalProductivityBarValue');
+const modalTurnoverBarValue = document.getElementById('modalTurnoverBarValue');
+
+// Modal y-axis labels
+const modalYMaxLabel = document.getElementById('modal-y-max');
+const modalY75Label = document.getElementById('modal-y-75');
+const modalY50Label = document.getElementById('modal-y-50');
+const modalY25Label = document.getElementById('modal-y-25');
+const modalY0Label = document.getElementById('modal-y-0');
+
+// Chart modal elements
+const chartModal = document.getElementById('chartModal');
+const openChartModalBtn = document.getElementById('openChartModal');
+const closeChartModalBtn = document.getElementById('closeChartModal');
+
 const yMaxLabel = document.getElementById('y-max');
 const yAxisLabels = document.querySelectorAll('.chart-y-axis-label');
 
@@ -223,107 +244,70 @@ const tableAbsentPercent = document.getElementById('tableAbsentPercent');
 const tableProductivityPercent = document.getElementById('tableProductivityPercent');
 const tableTurnoverPercent = document.getElementById('tableTurnoverPercent');
 
-// Modal elementer
-const modalTotalCost = document.getElementById('modalTotalCost');
-const modalStressedEmployees = document.getElementById('modalStressedEmployees');
-const modalCostPerEmployee = document.getElementById('modalCostPerEmployee');
-
-// Form hidden fields
-const formTotalCost = document.getElementById('formTotalCost');
-const formStressedEmployees = document.getElementById('formStressedEmployees');
-const formCostPerEmployee = document.getElementById('formCostPerEmployee');
-const formAbsentCost = document.getElementById('formAbsentCost');
-const formProductivityCost = document.getElementById('formProductivityCost');
-const formTurnoverCost = document.getElementById('formTurnoverCost');
-
-// Tab navigation
-const chartTab = document.getElementById('chartTab');
+// Tab navigation (nu kun table tab)
 const tableTab = document.getElementById('tableTab');
-const chartView = document.getElementById('chartView');
 const tableView = document.getElementById('tableView');
 
-// CTA og Modal
-const ctaButton = document.getElementById('ctaButton');
-const ctaModal = document.getElementById('ctaModal');
-const closeModal = document.getElementById('closeModal');
-
-// Kontaktformular
-const contactFormContainer = document.getElementById('contactFormContainer');
-const contactForm = document.getElementById('contactForm');
-const submitBtn = document.getElementById('submitBtn');
-const formSuccess = document.getElementById('formSuccess');
-
-// Export buttons
-const exportCsvBtn = document.getElementById('exportCsvBtn');
-const exportPdfBtn = document.getElementById('exportPdfBtn');
+// Export buttons (updated IDs)
+const exportCsvBtn = document.getElementById('btnExportCsv');
+const exportPdfBtn = document.getElementById('btnExportPdf');
 
 // Global Currency selector
 const globalCurrencySelect = document.getElementById('globalCurrencySelect');
 let currentLocale = 'da-DK';
 let currentCurrency = 'DKK';
 
-// Modal funktionalitet
-ctaButton.addEventListener('click', () => {
-    // Track modal open event
-    trackEvent('contact_modal_opened', {
-        currency: currentCurrency,
-        has_calculations: !!document.getElementById('totalCost')?.textContent
+// Chart modal event listeners
+if (openChartModalBtn) {
+    openChartModalBtn.addEventListener('click', () => {
+        if (chartModal) {
+            chartModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
     });
-    
-    ctaModal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Forhindrer scrolling af baggrunden
-    
-    // Opdater modal med de aktuelle beregninger
-    updateModalValues();
-});
+}
 
-closeModal.addEventListener('click', () => {
-    ctaModal.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Genaktiverer scrolling
-});
+if (closeChartModalBtn) {
+    closeChartModalBtn.addEventListener('click', () => {
+        if (chartModal) {
+            chartModal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+    });
+}
 
-window.addEventListener('click', (event) => {
-    if (event.target === ctaModal) {
-        ctaModal.style.display = 'none';
+// Close modal when clicking outside
+if (chartModal) {
+    chartModal.addEventListener('click', (e) => {
+        if (e.target === chartModal) {
+            chartModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    });
+}
+
+// Close modal with ESC key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && chartModal && !chartModal.classList.contains('hidden')) {
+        chartModal.classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
 });
 
-// Opdater modal værdier med aktuelle beregninger
-function updateModalValues() {
-    // Beregn værdier fra input-felterne
-    const employees = parseInt(employeesInput.value) || 0;
-    const stressPercent = parseInt(stressPercentInput.value) || 0;
-    const stressedEmployees = Math.round(employees * (stressPercent / 100));
-    const totalCostValue = parseInt(totalCostElement.textContent.replace(/[^\d]/g, '')) || 0;
-    const costPerEmployee = stressedEmployees > 0 ? totalCostValue / stressedEmployees : 0;
-    
-    modalTotalCost.textContent = totalCostElement.textContent;
-    modalStressedEmployees.textContent = stressedEmployees.toString();
-    modalCostPerEmployee.textContent = formatCurrency(costPerEmployee);
-    
-    // Opdater skjulte formularfelter
-    formTotalCost.value = totalCostElement.textContent;
-    formStressedEmployees.value = stressedEmployees.toString();
-    formCostPerEmployee.value = formatCurrency(costPerEmployee);
-    formAbsentCost.value = absentCostElement.textContent;
-    formProductivityCost.value = productivityCostElement.textContent;
-    formTurnoverCost.value = turnoverCostElement.textContent;
-}
+// Remove old chart/table tab functionality (commented out)
+// chartTab.addEventListener('click', () => {
+//     chartTab.classList.add('active');
+//     tableTab.classList.remove('active');
+//     chartView.classList.remove('hidden');
+//     tableView.classList.add('hidden');
+// });
 
-chartTab.addEventListener('click', () => {
-    chartTab.classList.add('active');
-    tableTab.classList.remove('active');
-    chartView.classList.remove('hidden');
-    tableView.classList.add('hidden');
-});
-
-tableTab.addEventListener('click', () => {
-    tableTab.classList.add('active');
-    chartTab.classList.remove('active');
-    tableView.classList.remove('hidden');
-    chartView.classList.add('hidden');
-});
+// tableTab.addEventListener('click', () => {
+//     tableTab.classList.add('active');
+//     chartTab.classList.remove('active');
+//     tableView.classList.remove('hidden');
+//     chartView.classList.add('hidden');
+// });
 
 // Validation helpers
 const employeesError = document.getElementById('employeesError');
@@ -357,7 +341,7 @@ function getCurrentExportData() {
         turnoverCost: turnoverCostElement.textContent,
         totalCost: totalCostElement.textContent,
         stressedEmployees: stressedEmployees.toString(),
-        costPerEmployee: formatCurrency(costPerEmployee),
+        costPerEmployee: fmtMoney(costPerEmployee),
         improvedTotal: improvedTotalCostEl ? improvedTotalCostEl.textContent : '',
         savingsAmount: savingsAmountEl ? savingsAmountEl.textContent : '',
         roiValue: roiValueEl ? roiValueEl.textContent : ''
@@ -626,6 +610,7 @@ calculateBtn2.addEventListener('click', () => {
 
 // Indlæs gemt tilstand ved page load
 document.addEventListener('DOMContentLoaded', () => {
+    initializeChart(); // Initialize chart on page load
     updateInputLabels();
     updateProgramLabel();
     loadState();
@@ -753,6 +738,29 @@ function loadState() {
     if (improvementPercentInput) improvementPercentValue.textContent = `${improvementPercentInput.value}%`;
 }
 
+// Chart initialization function
+function initializeChart() {
+    // Reset modal chart bars to 0 height initially
+    const modalBars = [modalAbsentBar, modalProductivityBar, modalTurnoverBar].filter(Boolean);
+    const modalValues = [modalAbsentBarValue, modalProductivityBarValue, modalTurnoverBarValue].filter(Boolean);
+    
+    modalBars.forEach(bar => bar.style.height = '0%');
+    modalValues.forEach(value => {
+        value.textContent = '-- kr.';
+        value.className = 'chart-bar-value text-gray-400';
+    });
+    
+    // Reset modal y-axis labels to default state
+    const modalYLabels = [modalYMaxLabel, modalY75Label, modalY50Label, modalY25Label, modalY0Label].filter(Boolean);
+    modalYLabels.forEach((label, index) => {
+        if (index === 4) { // Bottom label (0%)
+            label.textContent = '0 kr.';
+        } else {
+            label.textContent = '-- kr.';
+        }
+    });
+}
+
 function calculateCosts() {
     // Performance tracking - start timer
     const calcStartTime = performance.now();
@@ -803,16 +811,16 @@ function calculateCosts() {
     const costPerEmployee = stressedEmployees > 0 ? totalCost / stressedEmployees : 0;
     
     // Opdater resultater med formaterede tal og korrekte farver
-    absentCostElement.textContent = formatCurrency(absentCost);
+    absentCostElement.textContent = fmtMoney(absentCost);
     absentCostElement.className = "text-2xl font-bold text-gray-800";
     
-    productivityCostElement.textContent = formatCurrency(productivityCost);
+    productivityCostElement.textContent = fmtMoney(productivityCost);
     productivityCostElement.className = "text-2xl font-bold text-gray-800";
     
-    turnoverCostElement.textContent = formatCurrency(turnoverCost);
+    turnoverCostElement.textContent = fmtMoney(turnoverCost);
     turnoverCostElement.className = "text-2xl font-bold text-gray-800";
     
-    totalCostElement.textContent = formatCurrency(totalCost);
+    totalCostElement.textContent = fmtMoney(totalCost);
     totalCostElement.className = "text-2xl font-bold text-red-600";
 
     // Forbedret scenarie beregning
@@ -824,14 +832,14 @@ function calculateCosts() {
     const roi = programCost > 0 ? (savings / programCost) : 0;
 
     if (currentTotalForCompare) {
-        currentTotalForCompare.textContent = formatCurrency(totalCost);
+        currentTotalForCompare.textContent = fmtMoney(totalCost);
         currentTotalForCompare.className = "text-xl font-bold text-gray-800";
     }
     if (improvedTotalCostEl) {
-        improvedTotalCostEl.textContent = formatCurrency(improvedTotal);
+        improvedTotalCostEl.textContent = fmtMoney(improvedTotal);
         improvedTotalCostEl.className = "text-xl font-bold text-gray-800";
     }
-    if (savingsAmountEl) savingsAmountEl.textContent = formatCurrency(savings);
+    if (savingsAmountEl) savingsAmountEl.textContent = fmtMoney(savings);
     if (roiValueEl) roiValueEl.textContent = `${(roi * 100).toFixed(0)}%`;
     
     // Opdater Y-akse værdier
@@ -840,39 +848,43 @@ function calculateCosts() {
     // Afrund maxValue til et pænt tal for y-aksen
     const roundedMax = roundToNiceNumber(maxValue);
     
-    // Opdater y-akse labels
-    yMaxLabel.textContent = formatCurrency(roundedMax);
-    yAxisLabels[1].textContent = formatCurrency(roundedMax * 0.75);
-    yAxisLabels[2].textContent = formatCurrency(roundedMax * 0.5);
-    yAxisLabels[3].textContent = formatCurrency(roundedMax * 0.25);
-    yAxisLabels[4].textContent = formatCurrency(0);
+    // Opdater y-akse labels (nu kun modal)
+    if (modalYMaxLabel) modalYMaxLabel.textContent = formatCompactCurrency(roundedMax);
+    if (modalY75Label) modalY75Label.textContent = formatCompactCurrency(roundedMax * 0.75);
+    if (modalY50Label) modalY50Label.textContent = formatCompactCurrency(roundedMax * 0.5);
+    if (modalY25Label) modalY25Label.textContent = formatCompactCurrency(roundedMax * 0.25);
+    if (modalY0Label) modalY0Label.textContent = formatCompactCurrency(0);
     
-    // Opdater søjlehøjder i forhold til den afrundede maksværdi
-    absentBar.style.height = `${(absentCost / roundedMax) * 100}%`;
-    productivityBar.style.height = `${(productivityCost / roundedMax) * 100}%`;
-    turnoverBar.style.height = `${(turnoverCost / roundedMax) * 100}%`;
+    // Opdater modal søjlehøjder
+    if (modalAbsentBar) modalAbsentBar.style.height = `${(absentCost / roundedMax) * 100}%`;
+    if (modalProductivityBar) modalProductivityBar.style.height = `${(productivityCost / roundedMax) * 100}%`;
+    if (modalTurnoverBar) modalTurnoverBar.style.height = `${(turnoverCost / roundedMax) * 100}%`;
     
-    // Opdater værdier under søjlerne med korrekte farver
-    absentBarValue.textContent = formatCurrency(absentCost);
-    absentBarValue.className = "chart-bar-value text-gray-800";
-    
-    productivityBarValue.textContent = formatCurrency(productivityCost);
-    productivityBarValue.className = "chart-bar-value text-gray-800";
-    
-    turnoverBarValue.textContent = formatCurrency(turnoverCost);
-    turnoverBarValue.className = "chart-bar-value text-gray-800";
+    // Opdater modal værdier under søjlerne
+    if (modalAbsentBarValue) {
+        modalAbsentBarValue.textContent = fmtMoney(absentCost);
+        modalAbsentBarValue.className = "chart-bar-value text-gray-800";
+    }
+    if (modalProductivityBarValue) {
+        modalProductivityBarValue.textContent = fmtMoney(productivityCost);
+        modalProductivityBarValue.className = "chart-bar-value text-gray-800";
+    }
+    if (modalTurnoverBarValue) {
+        modalTurnoverBarValue.textContent = fmtMoney(turnoverCost);
+        modalTurnoverBarValue.className = "chart-bar-value text-gray-800";
+    }
     
     // Opdater tabel med korrekte farver
-    tableAbsentCost.textContent = formatCurrency(absentCost);
+    tableAbsentCost.textContent = fmtMoney(absentCost);
     tableAbsentCost.className = "py-2 px-4 text-sm text-right text-gray-700";
     
-    tableProductivityCost.textContent = formatCurrency(productivityCost);
+    tableProductivityCost.textContent = fmtMoney(productivityCost);
     tableProductivityCost.className = "py-2 px-4 text-sm text-right text-gray-700";
     
-    tableTurnoverCost.textContent = formatCurrency(turnoverCost);
+    tableTurnoverCost.textContent = fmtMoney(turnoverCost);
     tableTurnoverCost.className = "py-2 px-4 text-sm text-right text-gray-700";
     
-    tableTotalCost.textContent = formatCurrency(totalCost);
+    tableTotalCost.textContent = fmtMoney(totalCost);
     tableTotalCost.className = "py-2 px-4 text-sm text-right text-red-600";
     
     // Beregn procentdele til tabellen
@@ -886,14 +898,12 @@ function calculateCosts() {
         tableTurnoverPercent.textContent = '0%';
     }
     
-    // Opdater modal værdier hvis modalen er åben
-    if (ctaModal.style.display === 'block') {
-        updateModalValues();
-    }
-    
     // Performance tracking - end timer
     const calcEndTime = performance.now();
     const calcDuration = calcEndTime - calcStartTime;
+    
+    // Enable export buttons when there are results
+    setExportEnabled(totalCost > 0);
     
     // Track calculation performance
     trackPerformance('calculation_time', calcDuration, {
@@ -918,6 +928,51 @@ async function sendDataToGoogleSheets(data) {
         console.log('Error sending data to Google Sheets:', error);
         // Fail silently - don't disturb user experience
     }
+}
+
+// New currency formatting functions
+function parseCurrencySelect(val) {
+    const [code, locale] = val.split('|');
+    return {code, locale};
+}
+
+function fmtMoney(amount) {
+    const {code, locale} = parseCurrencySelect(globalCurrencySelect.value);
+    return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: code,
+        maximumFractionDigits: 0
+    }).format(Math.round(amount));
+}
+
+function updateAllCurrencyDisplays() {
+    // Only update if there are actual calculated values (not default text)
+    if (totalCostElement && totalCostElement.textContent && !totalCostElement.textContent.includes('--')) {
+        calculateCosts(); // Trigger re-render with new currency
+    }
+}
+
+// Export state management
+function setExportEnabled(enabled) {
+    const btnExportCsv = document.getElementById('btnExportCsv');
+    const btnExportPdf = document.getElementById('btnExportPdf');
+    
+    [btnExportCsv, btnExportPdf].forEach(btn => {
+        if (btn) {
+            btn.disabled = !enabled;
+            if (enabled) {
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                if (btn.id === 'btnExportCsv') {
+                    btn.classList.add('hover:text-gray-900', 'hover:bg-gray-50');
+                } else {
+                    btn.classList.add('hover:bg-primary-600');
+                }
+            } else {
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.classList.remove('hover:text-gray-900', 'hover:bg-gray-50', 'hover:bg-primary-600');
+            }
+        }
+    });
 }
 
 // Track when page loads
@@ -954,21 +1009,40 @@ function formatCurrency(amount) {
     }).format(Math.round(amount));
 }
 
+// Formater tal som kompakt valuta for y-akse (K, M format)
+function formatCompactCurrency(amount) {
+    const {code, locale} = parseCurrencySelect(globalCurrencySelect.value);
+    const currencySymbol = new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: code,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).formatToParts(0).find(part => part.type === 'currency')?.value || code;
+    
+    if (amount >= 1000000) {
+        return `${(amount / 1000000).toFixed(1)}M ${currencySymbol}`;
+    } else if (amount >= 1000) {
+        return `${(amount / 1000).toFixed(0)}K ${currencySymbol}`;
+    } else {
+        return fmtMoney(amount);
+    }
+}
+
 if (globalCurrencySelect) {
     globalCurrencySelect.addEventListener('change', () => {
-        const val = globalCurrencySelect.value || 'da-DK,DKK';
-        const parts = val.split(',');
-        currentLocale = parts[0] || 'da-DK';
-        currentCurrency = parts[1] || 'DKK';
+        const val = globalCurrencySelect.value || 'DKK|da-DK';
+        const {code, locale} = parseCurrencySelect(val);
+        currentLocale = locale;
+        currentCurrency = code;
         
         // Track currency change
         trackEvent('currency_changed', {
             from_currency: currentCurrency,
-            to_currency: parts[1] || 'DKK',
-            locale: parts[0] || 'da-DK'
+            to_currency: code,
+            locale: locale
         });
         
-        calculateCosts();
+        updateAllCurrencyDisplays();
         saveState();
     });
 }

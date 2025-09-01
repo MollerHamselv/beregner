@@ -142,18 +142,18 @@ input[type="range"]:focus::-moz-range-thumb {
     clip-path: inset(0 0 0 0);
 }
 
-/* Grid lines positioned with percentages - justeret så de ikke går uden for chart */
-.chart-grid-line:nth-child(1) { top: 7%; }
-.chart-grid-line:nth-child(2) { top: 32%; }
-.chart-grid-line:nth-child(3) { top: 57%; }
-.chart-grid-line:nth-child(4) { top: 82%; }
-.chart-grid-line:nth-child(5) { top: 99%; } /* Ændret fra 107% til 99% */
+/* Grid lines positioned with percentages - aligned with y-axis labels */
+.chart-grid-line:nth-child(1) { top: 0%; }    /* Align with top label (100%) */
+.chart-grid-line:nth-child(2) { top: 25%; }   /* Align with 75% label */
+.chart-grid-line:nth-child(3) { top: 50%; }   /* Align with 50% label */
+.chart-grid-line:nth-child(4) { top: 75%; }   /* Align with 25% label */
+.chart-grid-line:nth-child(5) { top: 100%; }  /* Align with bottom label (0%) */
 
 .chart-bar-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end; /* This ensures content is aligned to bottom */
+    justify-content: flex-end; /* This ensures bars align to bottom */
     width: 80px;
     height: 100%;
     position: relative;
@@ -166,8 +166,8 @@ input[type="range"]:focus::-moz-range-thumb {
     border-radius: 4px 4px 0 0;
     transition: all 0.3s ease-in-out;
     position: relative;
-    /* Use order to ensure bar is at bottom, then labels above */
-    order: 1;
+    /* Ensure bar sits at the very bottom */
+    margin-bottom: 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -208,7 +208,10 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 .chart-bar-value {
-    margin-bottom: 2px; /* Changed from margin-top to margin-bottom */
+    position: absolute;
+    bottom: -50px; /* Placeret under søjlen */
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 11px;
     color: #6b7280;
     text-align: center;
@@ -219,7 +222,7 @@ input[type="range"]:focus::-moz-range-thumb {
     border-radius: 4px;
     border: 1px solid #d1d5db;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    order: 2; /* Place value between bar and label */
+    white-space: nowrap;
 }
 
 /* Tab styling */
@@ -284,19 +287,79 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 /* CTA Button styling */
-.cta-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 999;
-    box-shadow: 0 8px 32px rgba(44, 124, 99, 0.4);
-    transition: all 0.3s ease;
-    animation: pulse-subtle 2s infinite;
+/* Chart Modal Styling */
+#chartModal {
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease-out;
 }
 
-.cta-button:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 12px 40px rgba(44, 124, 99, 0.6);
+#chartModal.hidden {
+    animation: fadeOut 0.3s ease-out;
+}
+
+#chartModal .bg-white {
+    animation: slideUp 0.3s ease-out;
+    transform: translateY(0);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal chart has larger dimensions */
+#chartModal .chart-wrapper {
+    overflow: visible !important;
+}
+
+#chartModal .chart-y-axis {
+    width: 100px !important;
+}
+
+#chartModal .chart-container {
+    margin-left: 105px !important;
+    width: calc(100% - 120px) !important;
+}
+
+#chartModal .chart-y-axis-label {
+    font-size: 14px !important;
+    padding: 6px 12px !important;
+    min-width: 80px !important;
+}
+
+#chartModal .chart-bar {
+    width: 60px !important;
+}
+
+#chartModal .chart-bar-container {
+    width: 100px !important;
+}
+
+#chartModal .chart-bar-label {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    bottom: -40px !important;
+}
+
+#chartModal .chart-bar-value {
+    font-size: 12px !important;
+    bottom: -65px !important;
 }
 
 @keyframes pulse-subtle {
@@ -308,71 +371,7 @@ input[type="range"]:focus::-moz-range-thumb {
     }
 }
 
-/* Modal styling */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    border: none;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.close-modal {
-    color: white;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    position: absolute;
-    right: 20px;
-    top: 15px;
-    z-index: 1001;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.2);
-    transition: background-color 0.2s ease;
-}
-
-.close-modal:hover,
-.close-modal:focus {
-    background-color: rgba(255, 255, 255, 0.3);
-    text-decoration: none;
-}
-
-/* Header container for modal and main header */
+/* Header container styling */
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -412,11 +411,6 @@ input[type="range"]:focus::-moz-range-thumb {
     .logo {
         max-height: 80px;
     }
-}
-
-.modal-overlay {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
 }
 
 /* Animation classes */
@@ -727,6 +721,46 @@ input[type="range"]:focus::-moz-range-thumb {
     input[type="range"]::-moz-range-thumb {
         width: 18px;
         height: 18px;
+    }
+}
+
+/* Better responsive chart handling for medium screens */
+@media (max-width: 768px) {
+    .chart-wrapper {
+        height: 320px;
+        padding: 15px;
+        padding-bottom: 60px;
+    }
+    
+    .chart-container {
+        height: 220px;
+        margin-left: 65px;
+        width: calc(100% - 80px);
+    }
+    
+    .chart-y-axis {
+        height: 220px;
+        width: 60px;
+    }
+    
+    .chart-y-axis-label {
+        font-size: 11px;
+        padding: 2px 6px;
+        min-width: 45px;
+    }
+    
+    .chart-bar-container {
+        width: 65px;
+    }
+    
+    .chart-bar {
+        width: 40px;
+    }
+    
+    .chart-bar-label {
+        font-size: 11px;
+        bottom: -35px;
+        width: 80px;
     }
 }
 
