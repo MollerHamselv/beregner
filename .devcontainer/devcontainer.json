@@ -1,0 +1,49 @@
+{
+  "name": "Beregner Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { 
+      "version": "22" 
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    }
+  },
+  
+  
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot-chat",
+        "ms-vscode.vscode-json",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode"
+      ]
+      
+    }
+  },
+  
+  "forwardPorts": [8080, 8081, 5501],
+  "portsAttributes": {
+    "8080": {
+      "label": "Local Development Server",
+      "onAutoForward": "notify"
+    },
+    "8081": {
+      "label": "Alternative Dev Server",
+      "onAutoForward": "ignore"
+    },
+    "5501": {
+      "label": "Live Server",
+      "onAutoForward": "ignore"
+    }
+  },
+  
+  "postCreateCommand": "npm install && echo 'Development environment ready! Run: python3 -m http.server 8080 to start local server.'",
+  
+  "mounts": [
+    "source=${localWorkspaceFolder}/.vscode,target=/workspaces/beregner/.vscode,type=bind"
+  ]
+}
