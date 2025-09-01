@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beregner Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn.danger:hover {
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+        
+        .btn.warning {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            box-shadow: 0 4px 15px rgba(254, 202, 87, 0.4);
+        }
+        
+        .btn.warning:hover {
+            box-shadow: 0 8px 25px rgba(254, 202, 87, 0.6);
+        }
+        
+        .btn.info {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            box-shadow: 0 4px 15px rgba(116, 185, 255, 0.4);
+        }
+        
+        .btn.info:hover {
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.6);
+        }
+        
+        .login-form {
+            max-width: 420px;
+            margin: 100px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .entries-table th,
+        .entries-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .entries-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .entries-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .industry-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .industry-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .industry-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logout-btn {
+            float: right;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            margin-top: -10px;
+        }
+        
+        .error { 
+            color: #e74c3c; 
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .success { 
+            color: #27ae60; 
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(39, 174, 96, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .loading { 
+            color: #3498db; 
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+            
+            .logout-btn {
+                float: none;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginForm" class="login-form">
+        <h2>Admin Login</h2>
+        <div class="form-group">
+            <label>Admin Key:</label>
+            <div style="position: relative;">
+                <input type="password" id="adminKey" placeholder="Indtast admin nøgle" style="padding-right: 50px;">
+                <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #6b7280;">👁️</button>
+            </div>
+        </div>
+        <button class="btn" onclick="login()">Log ind</button>
+        <div id="loginError" class="error" style="display: none;"></div>
+    </div>
+
+    <div id="dashboard" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>⚡ Beregner Dashboard</h1>
+                <p>Avanceret dataanalyse og GDPR-kompatibel datahåndtering</p>
+                <button class="btn danger logout-btn" onclick="logout()">🚪 Log ud</button>
+            </div>
+
+            <!-- Statistikker -->
+            <div class="section">
+                <h2>📊 Live Statistikker</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalEntries">-</div>
+                        <div class="stat-label">Samlede beregninger</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="uniqueIndustries">-</div>
+                        <div class="stat-label">Aktive brancher</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgSalary">-</div>
+                        <div class="stat-label">Gennemsnitsløn</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgStress">-</div>
+                        <div class="stat-label">Gennemsnitlig stress</div>
+                    </div>
+                </div>
+                
+                <div class="industry-stats" id="industryStats"></div>
+            </div>
+
+            <!-- Kontroller -->
+            <div class="section">
+                <h2>🔧 Administrative handlinger</h2>
+                <div class="controls">
+                    <button class="btn info" onclick="refreshData()">🔄 Opdater data</button>
+                    <button class="btn info" onclick="exportData('json')">📋 Eksporter JSON</button>
+                    <button class="btn info" onclick="exportData('csv')">📊 Eksporter CSV</button>
+                    <button class="btn warning" onclick="anonymizeOld()">🔒 Anonymiser (90+ dage)</button>
+                    <button class="btn danger" onclick="deleteOld()">🗑️ Slet gamle data (365+ dage)</button>
+                </div>
+                <div id="actionResult"></div>
+            </div>
+
+            <!-- Kode Viewer -->
+            <div class="section">
+                <h2>💻 Kode Viewer</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">Se og valider din kildekode direkte i dashboardet</p>
+                
+                <div class="controls">
+                    <select id="fileSelector" style="padding: 10px; border-radius: 8px; border: 2px solid #e1e8ed; margin-right: 15px;">
+                        <option value="">Vælg fil at vise...</option>
+                    </select>
+                    <button class="btn info" onclick="loadCode()">📄 Vis kode</button>
+                    <button class="btn info" onclick="downloadCode()">💾 Download</button>
+                </div>
+                
+                <div id="codeContainer" style="display: none;">
+                    <div style="background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px; margin-top: 20px; position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #4a5568; padding-bottom: 10px;">
+                            <span id="fileName" style="font-weight: 600; color: #81e6d9;"></span>
+                            <span id="fileLanguage" style="background: #4a5568; padding: 4px 8px; border-radius: 4px; font-size: 12px;"></span>
+                        </div>
+                        <div id="fileDescription" style="color: #a0aec0; margin-bottom: 15px; font-style: italic;"></div>
+                        <pre id="codeContent" style="margin: 0; overflow-x: auto; white-space: pre-wrap; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; line-height: 1.5;"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seneste indtastninger -->
+            <div class="section">
+                <h2>📝 Seneste beregninger</h2>
+                <div style="overflow-x: auto;">
+                    <table class="entries-table" id="entriesTable">
+                        <thead>
+                            <tr>
+                                <th>Tidsstempel</th>
+                                <th>Medarbejdere</th>
+                                <th>Branche</th>
+                                <th>Løn</th>
+                                <th>Stress %</th>
+                                <th>IP</th>
+                                <th>Handlinger</th>
+                            </tr>
+                        </thead>
+                        <tbody id="entriesBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminKey = '';
+
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('adminKey');
+            const toggleButton = passwordField.nextElementSibling;
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.textContent = '🙈';
+            } else {
+                passwordField.type = 'password';
+                toggleButton.textContent = '👁️';
+            }
+        }
+
+        function login() {
+            const key = document.getElementById('adminKey').value;
+            if (!key) {
+                showError('loginError', 'Indtast venligst admin nøgle');
+                return;
+            }
+            
+            adminKey = key;
+            // Test nøglen ved at hente statistikker
+            fetch('/api/admin/stats', {
+                headers: { 'X-Admin-Key': adminKey }
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    loadDashboard();
+                } else {
+                    throw new Error('Ugyldig admin nøgle');
+                }
+            })
+            .catch(error => {
+                showError('loginError', error.message);
+            });
+        }
+
+        function logout() {
+            adminKey = '';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminKey').value = '';
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function showResult(message, type = 'success') {
+            const el = document.getElementById('actionResult');
+            el.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => el.innerHTML = '', 5000);
+        }
+
+        function loadDashboard() {
+            refreshData();
+            loadFileList();
+        }
+
+        function loadFileList() {
+            fetch('/api/admin/code-viewer', {
+                headers: { 'X-Admin-Key': adminKey }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    const selector = document.getElementById('fileSelector');
+                    selector.innerHTML = '<option value="">Vælg fil at vise...</option>';
+                    
+                    data.files.forEach(file => {
+                        const option = document.createElement('option');
+                        option.value = file.key;
+                        option.textContent = `${file.name} - ${file.description}`;
+                        selector.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Fejl ved hentning af filliste:', error);
+            });
+        }
+
+        function loadCode() {
+            const fileKey = document.getElementById('fileSelector').value;
+            if (!fileKey) {
+                showResult('Vælg venligst en fil først', 'error');
+                return;
+            }
+
+            showResult('Henter kode...', 'loading');
+
+            fetch(`/api/admin/code-viewer?file=${fileKey}`, {
+                headers: { 'X-Admin-Key': adminKey }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    document.getElementById('fileName').textContent = data.file;
+                    document.getElementById('fileLanguage').textContent = data.language.toUpperCase();
+                    document.getElementById('fileDescription').textContent = data.description;
+                    document.getElementById('codeContent').textContent = data.content;
+                    document.getElementById('codeContainer').style.display = 'block';
+                    
+                    showResult('Kode indlæst successfully', 'success');
+                } else {
+                    throw new Error(data.error);
+                }
+            })
+            .catch(error => {
+                showResult('Fejl ved indlæsning af kode: ' + error.message, 'error');
+            });
+        }
+
+        function downloadCode() {
+            const fileName = document.getElementById('fileName').textContent;
+            const content = document.getElementById('codeContent').textContent;
+            
+            if (!fileName || !content) {
+                showResult('Ingen kode at downloade', 'error');
+                return;
+            }
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showResult('Fil downloadet', 'success');
+        }
+
+        function refreshData() {
+            showResult('Henter data...', 'loading');
+            
+            fetch('/api/admin/stats', {
+                headers: { 'X-Admin-Key': adminKey }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    updateStats(data.stats);
+                    updateIndustryStats(data.stats.industries);
+                    updateEntriesTable(data.recentEntries);
+                    showResult(`Data opdateret - ${data.system || 'System aktiv'}`, 'success');
+                } else {
+                    throw new Error(data.error || 'Fejl ved hentning af data');
+                }
+            })
+            .catch(error => {
+                showResult('Fejl: ' + error.message, 'error');
+            });
+        }
+
+        function updateStats(stats) {
+            document.getElementById('totalEntries').textContent = stats.totalEntries?.toLocaleString('da-DK') || 0;
+            document.getElementById('uniqueIndustries').textContent = Object.keys(stats.industries || {}).length;
+            
+            // Format gennemsnitsløn
+            const avgSalary = stats.avgSalary || 0;
+            document.getElementById('avgSalary').textContent = avgSalary.toLocaleString('da-DK') + ' kr';
+            
+            // Format gennemsnitlig stress
+            const avgStress = stats.avgStress || 0;
+            document.getElementById('avgStress').textContent = avgStress + '%';
+        }
+
+        function updateIndustryStats(industries) {
+            const container = document.getElementById('industryStats');
+            container.innerHTML = '';
+            
+            Object.entries(industries || {})
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([industry, count]) => {
+                    const card = document.createElement('div');
+                    card.className = 'industry-card';
+                    card.innerHTML = `
+                        <strong>${industry}</strong><br>
+                        <span style="font-size: 1.2em; color: #667eea; font-weight: 600;">
+                            ${count.toLocaleString('da-DK')} beregninger
+                        </span>
+                    `;
+                    container.appendChild(card);
+                });
+        }
+
+        function updateEntriesTable(entries) {
+            const tbody = document.getElementById('entriesBody');
+            tbody.innerHTML = '';
+            
+            entries.forEach(entry => {
+                const row = document.createElement('tr');
+                const date = new Date(entry.created || entry.timestamp).toLocaleString('da-DK');
+                
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${entry.employees || '-'}</td>
+                    <td>${entry.industry || '-'}</td>
+                    <td>${entry.salary ? entry.salary.toLocaleString('da-DK') + ' kr' : '-'}</td>
+                    <td>${entry.stressPct || 0}%</td>
+                    <td>${entry.ip || '-'}</td>
+                    <td>
+                        <button class="btn danger" style="padding: 5px 10px; font-size: 12px;" 
+                                onclick="deleteEntry('${entry.id}')">Slet</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function exportData(format) {
+            showResult('Eksporterer...', 'loading');
+            
+            const url = `/api/admin/export?format=${format}&key=${encodeURIComponent(adminKey)}`;
+            
+            if (format === 'csv') {
+                // Download CSV fil
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `beregner-data-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                showResult('CSV fil downloadet');
+            } else {
+                // Vis JSON i nyt vindue
+                window.open(url, '_blank');
+                showResult('JSON data åbnet i nyt vindue');
+            }
+        }
+
+        function anonymizeOld() {
+            if (!confirm('Er du sikker på, at du vil anonymisere data ældre end 90 dage?')) return;
+            
+            showResult('Anonymiserer gamle data...', 'loading');
+            
+            fetch('/api/admin/cleanup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Key': adminKey
+                },
+                body: JSON.stringify({ action: 'anonymize-old', days: 90 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showResult(`${data.anonymizedCount} poster anonymiseret`);
+                    refreshData();
+                } else {
+                    throw new Error(data.error);
+                }
+            })
+            .catch(error => {
+                showResult('Fejl: ' + error.message, 'error');
+            });
+        }
+
+        function deleteOld() {
+            if (!confirm('ADVARSEL: Dette vil permanent slette data ældre end 365 dage. Er du sikker?')) return;
+            
+            showResult('Sletter gamle data...', 'loading');
+            
+            fetch('/api/admin/cleanup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Key': adminKey
+                },
+                body: JSON.stringify({ action: 'delete-old', days: 365 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showResult(`${data.deletedCount} poster slettet`);
+                    refreshData();
+                } else {
+                    throw new Error(data.error);
+                }
+            })
+            .catch(error => {
+                showResult('Fejl: ' + error.message, 'error');
+            });
+        }
+
+        function deleteEntry(entryId) {
+            if (!confirm('Er du sikker på, at du vil slette denne post?')) return;
+            
+            fetch('/api/admin/cleanup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Key': adminKey
+                },
+                body: JSON.stringify({ action: 'delete-entry', entryId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showResult('Post slettet');
+                    refreshData();
+                } else {
+                    throw new Error(data.error);
+                }
+            })
+            .catch(error => {
+                showResult('Fejl: ' + error.message, 'error');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "public": true,
+  "functions": {
+    "api/collect.js": {
+      "maxDuration": 30
+    },
+    "api/admin/*.js": {
+      "maxDuration": 30
+    }
+  }
+}
